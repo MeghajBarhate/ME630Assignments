@@ -282,6 +282,8 @@ me630_require_python_package(
 me630_require_python_package(
     scipy
     scipy
+    sympy
+    sympy
 )
 
 # Plotting
