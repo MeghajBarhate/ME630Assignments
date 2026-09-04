@@ -7949,7 +7949,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -7997,7 +7997,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
@@ -8138,6 +8138,7 @@ $$</p>
 <p>Derive the standard <strong>5-point finite-difference equation</strong> at an interior node, and assemble the global linear system</p>
 </blockquote>
 <p><img alt="" src="../docs/Assignment1/Problem1/DerivationPage1.png"/></p>
+
 </div>
 </div>
 </div>
@@ -8366,7 +8367,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mf">0.4</span><span class="o">/</span><span class="mi">2</span> <span class="c1"># Length of the rectangular domain</span>
@@ -8453,7 +8454,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">MeshValidation</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">h</span><span class="p">):</span>
@@ -8537,7 +8538,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1">#Data Structures for Finite Difference Stencil</span>
@@ -8669,7 +8670,7 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Logger</span>
@@ -8803,34 +8804,34 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000162        0.000046             0.000
-2. Mesh Validation                            0.250659        0.251434             7.004
-3. Matrix / RHS Allocation                    0.000020        0.000014             0.000
-4. System Matrix Setup                        0.000148        0.000143             0.000
-5. LU Factorization                           0.000291        0.000177             0.426
-6. System Solution                            0.000146        0.000126             0.188
+1. Mesh Setup                                 0.000049        0.000049             0.000
+2. Mesh Validation                            0.248974        0.249963             8.730
+3. Matrix / RHS Allocation                    0.000028        0.000028             0.000
+4. System Matrix Setup                        0.000194        0.000195             0.000
+5. LU Factorization                           0.000246        0.000246             0.426
+6. System Solution                            0.000078        0.000078             0.188
 ----------------------------------------------------------------------------------------
-TOTAL                                         0.251650        0.252137             7.621
+TOTAL                                         0.249870        0.250817             9.348
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 0.000291 s
-System solution CPU time                                   : 0.000146 s
-Total direct solver CPU time                               : 0.000438 s
+LU factorization CPU time                                  : 0.000246 s
+System solution CPU time                                   : 0.000078 s
+Total direct solver CPU time                               : 0.000324 s
 
-LU factorization wall time                                 : 0.000177 s
-System solution wall time                                  : 0.000126 s
-Total direct solver wall time                              : 0.000302 s
+LU factorization wall time                                 : 0.000246 s
+System solution wall time                                  : 0.000078 s
+Total direct solver wall time                              : 0.000324 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 130.422 MB
-Process memory after simulation                            : 138.043 MB
-Net process memory change                                  : 7.621 MB
+Process memory before simulation                           : 123.031 MB
+Process memory after simulation                            : 132.379 MB
+Net process memory change                                  : 9.348 MB
 
 System matrix storage                                      : 0.061798 MB
 Temperature vector storage                                 : 0.000687 MB
@@ -8939,34 +8940,34 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000138        0.000138             0.012
-2. Mesh Validation                            0.681789        0.682263            20.977
-3. Matrix / RHS Allocation                    0.000084        0.000080             0.000
-4. System Matrix Setup                        0.000516        0.000389             0.000
-5. LU Factorization                           0.003337        0.001319             1.930
-6. System Solution                            0.000077        0.000077             0.000
+1. Mesh Setup                                 0.000126        0.000127             0.012
+2. Mesh Validation                            0.678883        0.678888            20.586
+3. Matrix / RHS Allocation                    0.000206        0.000178             0.000
+4. System Matrix Setup                        0.000563        0.000394             0.000
+5. LU Factorization                           0.010428        0.001829             1.887
+6. System Solution                            0.000078        0.000078             0.000
 ----------------------------------------------------------------------------------------
-TOTAL                                         0.686305        0.684700            22.922
+TOTAL                                         0.709311        0.681712            22.512
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 0.003337 s
-System solution CPU time                                   : 0.000077 s
-Total direct solver CPU time                               : 0.003413 s
+LU factorization CPU time                                  : 0.010428 s
+System solution CPU time                                   : 0.000078 s
+Total direct solver CPU time                               : 0.010506 s
 
-LU factorization wall time                                 : 0.001319 s
-System solution wall time                                  : 0.000077 s
-Total direct solver wall time                              : 0.001396 s
+LU factorization wall time                                 : 0.001829 s
+System solution wall time                                  : 0.000078 s
+Total direct solver wall time                              : 0.001907 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 138.047 MB
-Process memory after simulation                            : 160.969 MB
-Net process memory change                                  : 22.922 MB
+Process memory before simulation                           : 132.383 MB
+Process memory after simulation                            : 154.895 MB
+Net process memory change                                  : 22.512 MB
 
 System matrix storage                                      : 1.101685 MB
 Temperature vector storage                                 : 0.002899 MB
@@ -9075,34 +9076,34 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000576        0.000576             0.020
-2. Mesh Validation                            3.610841        2.842915            59.117
-3. Matrix / RHS Allocation                    0.000036        0.000030             0.004
-4. System Matrix Setup                        0.003286        0.003269            18.207
-5. LU Factorization                          13.534047        0.620556            23.539
-6. System Solution                            0.023065        0.000805             0.000
+1. Mesh Setup                                 0.020623        0.000530             0.000
+2. Mesh Validation                            3.701052        2.812220            57.520
+3. Matrix / RHS Allocation                    0.000052        0.000044             0.004
+4. System Matrix Setup                        0.004011        0.003674            15.672
+5. LU Factorization                          16.764587        0.770016            25.008
+6. System Solution                            0.024024        0.000843             0.000
 ----------------------------------------------------------------------------------------
-TOTAL                                        17.525675        3.482766           101.312
+TOTAL                                        21.098588        3.612269            98.629
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 13.534047 s
-System solution CPU time                                   : 0.023065 s
-Total direct solver CPU time                               : 13.557112 s
+LU factorization CPU time                                  : 16.764587 s
+System solution CPU time                                   : 0.024024 s
+Total direct solver CPU time                               : 16.788611 s
 
-LU factorization wall time                                 : 0.620556 s
-System solution wall time                                  : 0.000805 s
-Total direct solver wall time                              : 0.621360 s
+LU factorization wall time                                 : 0.770016 s
+System solution wall time                                  : 0.000843 s
+Total direct solver wall time                              : 0.770860 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 157.359 MB
-Process memory after simulation                            : 258.672 MB
-Net process memory change                                  : 101.312 MB
+Process memory before simulation                           : 151.836 MB
+Process memory after simulation                            : 250.465 MB
+Net process memory change                                  : 98.629 MB
 
 System matrix storage                                      : 18.566895 MB
 Temperature vector storage                                 : 0.011902 MB
@@ -9136,9 +9137,9 @@ CSV number of temperature values                           : 1,560
 ====================================================================================================
      h [m]           N     Matrix MB     Setup CPU        LU CPU     Solve CPU    Direct CPU     Total CPU
 ----------------------------------------------------------------------------------------------------------
-   0.02000          90         0.062      0.000148      0.000291      0.000146      0.000438      0.251650
-   0.01000         380         1.102      0.000516      0.003337      0.000077      0.003413      0.686305
-   0.00500       1,560        18.567      0.003286     13.534047      0.023065     13.557112     17.525675
+   0.02000          90         0.062      0.000194      0.000246      0.000078      0.000324      0.249870
+   0.01000         380         1.102      0.000563      0.010428      0.000078      0.010506      0.709311
+   0.00500       1,560        18.567      0.004011     16.764587      0.024024     16.788611     21.098588
 ----------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
@@ -9162,7 +9163,7 @@ Temperature CSV for h = 0.00500 m                          : ../../Dumps/Problem
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">length</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">halfLength</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span>
@@ -9256,7 +9257,7 @@ Temperature CSV for h = 0.00500 m                          : ../../Dumps/Problem
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -9349,7 +9350,7 @@ Maximum relative error at convergence = 1.31803978e-07
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegularGridInterpolator</span>
@@ -9426,7 +9427,7 @@ Maximum relative error at convergence = 1.31803978e-07
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">AnalyticalSolution</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">T0</span><span class="p">,</span> <span class="n">numberOfTerms</span><span class="p">):</span>
