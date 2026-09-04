@@ -7802,22 +7802,20 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
-<h1 id="ME630--Assignment-1---Problem-Statement-1">ME630 -Assignment 1 - Problem Statement 1<a class="anchor-link" href="#ME630--Assignment-1---Problem-Statement-1">¶</a></h1></blockquote>
-<p><strong>Name:</strong> Meghaj Nandumar Barhate<br/>
+<h1 id="ME630--Assignment-1---Problem-Statement-1"><strong>ME630 -Assignment 1 - Problem Statement 1</strong><a class="anchor-link" href="#ME630--Assignment-1---Problem-Statement-1">¶</a></h1><p><strong>Name:</strong> Meghaj Nandumar Barhate<br/>
 <strong>Programme:</strong> M.Tech. in Fluid and Thermal Sciences<br/>
 <strong>Roll Number:</strong> 261050047</p>
-<h1 id="Rectangular-Plate:-Steady-State-Heat-Conduction">Rectangular Plate: Steady-State Heat Conduction<a class="anchor-link" href="#Rectangular-Plate:-Steady-State-Heat-Conduction">¶</a></h1><p>A thin rectangular plate of width $a$ and height $b$ has three sides held at $0^\circ\mathrm{C}$ while the fourth (top) side is held at a uniform temperature $T_0$. There is no internal heat generation and the plate is thin enough that conduction may be treated as two-dimensional, so that the steady-state temperature field satisfies Laplace's equation
-$$
-\frac{\partial^2 T}{\partial x^2}
-+
-\frac{\partial^2 T}{\partial y^2}
+<hr/>
+<ul>
+<li>\frac{\partial^2 T}{\partial y^2}
 =0,
 \qquad
 0 \le x \le a,
 \qquad
 0 \le y \le b.
-$$</p>
+$$</li>
+</ul>
+<blockquote>
 <h4 id="Boundary-Conditions">Boundary Conditions<a class="anchor-link" href="#Boundary-Conditions">¶</a></h4><p>$$
 T(x,0)=0,
 \qquad
@@ -7827,6 +7825,13 @@ T(a,y)=0,
 \qquad
 T(x,b)=T_0.
 $$</p>
+</blockquote>
+<blockquote>
+<h1 id="Rectangular-Plate:-Steady-State-Heat-Conduction">Rectangular Plate: Steady-State Heat Conduction<a class="anchor-link" href="#Rectangular-Plate:-Steady-State-Heat-Conduction">¶</a></h1><p>A thin rectangular plate of width $a$ and height $b$ has three sides held at $0^\circ\mathrm{C}$ while the fourth (top) side is held at a uniform temperature $T_0$. There is no internal heat generation and the plate is thin enough that conduction may be treated as two-dimensional, so that the steady-state temperature field satisfies Laplace's equation
+$$
+\frac{\partial^2 T}{\partial x^2}</p>
+</blockquote>
+<blockquote>
 <h4 id="Data">Data<a class="anchor-link" href="#Data">¶</a></h4><p>$$
 a=0.4\ \mathrm{m},
 \qquad
@@ -7834,6 +7839,8 @@ b=0.2\ \mathrm{m},
 \qquad
 T_0=100^\circ\mathrm{C}.
 $$</p>
+</blockquote>
+<blockquote>
 <h4 id="Analytical-Solution">Analytical Solution<a class="anchor-link" href="#Analytical-Solution">¶</a></h4><p>By separation of variables,
 $$
 T(x,y)
@@ -7849,11 +7856,12 @@ T(x,y)
 }.
 $$
 Use enough terms to ensure the series has converged to at least <strong>five significant figures</strong> before using it as your benchmark.</p>
+</blockquote>
 <hr/>
 <p><strong>Fig. 1:</strong> Rectangular plate with three sides at $0^\circ\mathrm{C}$ and the top side at $T_0$; inset shows the interior 5-point stencil at node $(i,j)$.</p>
 <hr/>
-<h2 id="Tasks">Tasks<a class="anchor-link" href="#Tasks">¶</a></h2><blockquote>
-<h4 id="Derive-the-standard-5-point-finite-difference-equation-at-an-interior-node,-and-assemble-the-global-linear-system">Derive the standard <strong>5-point finite-difference equation</strong> at an interior node, and assemble the global linear system<a class="anchor-link" href="#Derive-the-standard-5-point-finite-difference-equation-at-an-interior-node,-and-assemble-the-global-linear-system">¶</a></h4><p>$$
+<blockquote>
+<h2 id="Tasks">Tasks<a class="anchor-link" href="#Tasks">¶</a></h2><h4 id="Derive-the-standard-5-point-finite-difference-equation-at-an-interior-node,-and-assemble-the-global-linear-system">Derive the standard <strong>5-point finite-difference equation</strong> at an interior node, and assemble the global linear system<a class="anchor-link" href="#Derive-the-standard-5-point-finite-difference-equation-at-an-interior-node,-and-assemble-the-global-linear-system">¶</a></h4><p>$$
 [A]\{T\}=\{b\}
 $$
 for a uniform grid with
@@ -8129,7 +8137,7 @@ $$</p>
 <h1 id="Task-(A)">Task (A)<a class="anchor-link" href="#Task-(A)">¶</a></h1><blockquote>
 <p>Derive the standard <strong>5-point finite-difference equation</strong> at an interior node, and assemble the global linear system</p>
 </blockquote>
-<p><img alt="" src="../../Images/Problem1/DerivationPage1.png"/></p>
+<p><img alt="" src="../docs/Assignment1/Problem1/DerivationPage1.png"/></p>
 </div>
 </div>
 </div>
@@ -8140,7 +8148,7 @@ $$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p><img alt="" src="../../Images/Problem1/DerivationPage2.png"/></p>
+<p><img alt="" src="../docs/Assignment1/Problem1/DerivationPage2.png"/></p>
 </div>
 </div>
 </div>
@@ -8190,7 +8198,7 @@ $$
 $$
 are integers.</p>
 <hr/>
-<p><img alt="" src="../../Images/Problem1/DerivationPage3.png"/></p>
+<p><img alt="" src="../docs/Assignment1/Problem1/DerivationPage3.png"/></p>
 </div>
 </div>
 </div>
