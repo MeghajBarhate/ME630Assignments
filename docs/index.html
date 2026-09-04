@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ME630 assignments and solution pages by Meghaj Barhate.">
+  <title>ME630 Assignments | Meghaj Barhate</title>
+
+  <style>
+    :root {
+      --bg: #f4f7fa;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #17212b;
+      --muted: #5d6976;
+      --accent: #1f4e79;
+      --accent-dark: #173b5c;
+      --border: #d9e1e8;
+      --shadow: 0 10px 28px rgba(23, 33, 43, 0.08);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 48px;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+      padding: clamp(30px, 6vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .student-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .student-info li {
+      padding: 8px 12px;
+      background: #eef3f8;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #344152;
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    .assignments {
+      display: grid;
+      gap: 22px;
+    }
+
+    .assignment-row {
+      padding: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 20px rgba(23, 33, 43, 0.05);
+    }
+
+    .assignment-header {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .assignment-label {
+      display: inline-block;
+      margin-bottom: 7px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .assignment-header h2 {
+      margin-bottom: 8px;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .assignment-header p {
+      margin-bottom: 0;
+      max-width: 850px;
+      color: var(--muted);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .problem-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      padding: 22px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .problem-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.15rem;
+    }
+
+    .problem-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .action-area {
+      margin-top: auto;
+      padding-top: 24px;
+    }
+
+    .solution-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 18px;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 9px;
+      color: #ffffff;
+      font-weight: 750;
+      text-decoration: none;
+      transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        transform 150ms ease;
+    }
+
+    .solution-button:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    .solution-button:focus-visible {
+      outline: 3px solid rgba(31, 78, 121, 0.28);
+      outline-offset: 3px;
+    }
+
+    .status-note {
+      display: inline-block;
+      margin-top: auto;
+      padding-top: 24px;
+      color: #7a8693;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    footer {
+      padding: 30px 4px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 760px) {
+      .page-shell {
+        width: min(100% - 20px, 1120px);
+        padding: 20px 0 32px;
+      }
+
+      .hero,
+      .assignment-row {
+        padding: 22px;
+      }
+
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .problem-card {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <p class="eyebrow">Engineering Coursework</p>
+      <h1>ME630 Assignments</h1>
+
+      <p class="lead">
+        A structured collection of ME630 assignment work. Each assignment is
+        presented with a short overview followed by individual problem sections
+        and links to completed solution pages where available.
+      </p>
+
+      <ul class="student-info" aria-label="Student information">
+        <li>Meghaj Barhate</li>
+        <li>Course: ME630</li>
+      </ul>
+    </header>
+
+    <section class="assignments" aria-label="ME630 assignments">
+
+      <article class="assignment-row">
+        <header class="assignment-header">
+          <span class="assignment-label">Assignment 1</span>
+          <h2>Assignment 1 Overview</h2>
+          <p>
+            This assignment introduces the first set of ME630 numerical and
+            computational problems. The individual problem sections below
+            summarize the scope of each task and provide access to completed
+            solutions.
+          </p>
+        </header>
+
+        <div class="problem-grid">
+          <section class="problem-card">
+            <h3>Problem 1</h3>
+            <p>
+              Problem 1 focuses on the first computational exercise in
+              Assignment 1. The complete derivation, numerical implementation,
+              results, and discussion are available on the dedicated solution
+              page.
+            </p>
+
+            <div class="action-area">
+              <a
+                class="solution-button"
+                href="https://meghajbarhate.github.io/ME630Assignments/Assignment1-Problem1-261050047.html"
+                aria-label="Go to the solution page for Assignment 1 Problem 1"
+              >
+                Go to Solution
+              </a>
+            </div>
+          </section>
+
+          <section class="problem-card">
+            <h3>Problem 2</h3>
+            <p>
+              Problem 2 contains the second exercise from Assignment 1. A concise
+              problem description can be placed here once the final wording is
+              available.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+        </div>
+      </article>
+
+      <article class="assignment-row">
+        <header class="assignment-header">
+          <span class="assignment-label">Assignment 2</span>
+          <h2>Assignment 2 Overview</h2>
+          <p>
+            This section is reserved for the overview of Assignment 2, including
+            its computational objectives, methods, and expected outcomes.
+          </p>
+        </header>
+
+        <div class="problem-grid">
+          <section class="problem-card">
+            <h3>Problem 1</h3>
+            <p>
+              Add the description of Assignment 2, Problem 1 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+
+          <section class="problem-card">
+            <h3>Problem 2</h3>
+            <p>
+              Add the description of Assignment 2, Problem 2 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+        </div>
+      </article>
+
+      <article class="assignment-row">
+        <header class="assignment-header">
+          <span class="assignment-label">Assignment 3</span>
+          <h2>Assignment 3 Overview</h2>
+          <p>
+            This section is reserved for the overview of Assignment 3, including
+            the principal numerical methods and engineering concepts addressed.
+          </p>
+        </header>
+
+        <div class="problem-grid">
+          <section class="problem-card">
+            <h3>Problem 1</h3>
+            <p>
+              Add the description of Assignment 3, Problem 1 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+
+          <section class="problem-card">
+            <h3>Problem 2</h3>
+            <p>
+              Add the description of Assignment 3, Problem 2 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+        </div>
+      </article>
+
+      <article class="assignment-row">
+        <header class="assignment-header">
+          <span class="assignment-label">Assignment 4</span>
+          <h2>Assignment 4 Overview</h2>
+          <p>
+            This section is reserved for the overview of Assignment 4, including
+            its objectives, governing ideas, and computational workflow.
+          </p>
+        </header>
+
+        <div class="problem-grid">
+          <section class="problem-card">
+            <h3>Problem 1</h3>
+            <p>
+              Add the description of Assignment 4, Problem 1 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+
+          <section class="problem-card">
+            <h3>Problem 2</h3>
+            <p>
+              Add the description of Assignment 4, Problem 2 here.
+            </p>
+            <span class="status-note">Solution page not linked yet.</span>
+          </section>
+        </div>
+      </article>
+
+    </section>
+
+    <footer>
+      ME630 Coursework · Meghaj Barhate
+    </footer>
+  </main>
+</body>
+</html>
