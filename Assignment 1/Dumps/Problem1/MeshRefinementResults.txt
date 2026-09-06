@@ -68,33 +68,33 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000158        0.000157             0.000
+1. Mesh Setup                                 0.000148        0.000148             0.000
 2. Mesh Validation                             SKIPPED         SKIPPED               ---
-3. Matrix / RHS Allocation                    0.000011        0.000011             0.000
-4. System Matrix Setup                        0.000100        0.000100             0.000
-5. LU Factorization                           0.000118        0.000118             0.000
-6. System Solution                            0.000035        0.000035             0.000
+3. Matrix / RHS Allocation                    0.000010        0.000010             0.000
+4. System Matrix Setup                        0.000099        0.000099             0.000
+5. LU Factorization                           0.000112        0.000112             0.000
+6. System Solution                            0.000033        0.000034             0.000
 ----------------------------------------------------------------------------------------
-TOTAL                                         0.000545        0.000530             0.000
+TOTAL                                         0.000515        0.000504             0.000
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 0.000118 s
-System solution CPU time                                   : 0.000035 s
-Total direct solver CPU time                               : 0.000153 s
+LU factorization CPU time                                  : 0.000112 s
+System solution CPU time                                   : 0.000033 s
+Total direct solver CPU time                               : 0.000145 s
 
-LU factorization wall time                                 : 0.000118 s
-System solution wall time                                  : 0.000035 s
-Total direct solver wall time                              : 0.000153 s
+LU factorization wall time                                 : 0.000112 s
+System solution wall time                                  : 0.000034 s
+Total direct solver wall time                              : 0.000146 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 215.316 MB
-Process memory after simulation                            : 215.316 MB
+Process memory before simulation                           : 213.281 MB
+Process memory after simulation                            : 213.281 MB
 Net process memory change                                  : 0.000 MB
 
 System matrix storage                                      : 0.061798 MB
@@ -187,33 +187,33 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000249        0.000159             0.000
+1. Mesh Setup                                 0.000157        0.000157             0.000
 2. Mesh Validation                             SKIPPED         SKIPPED               ---
-3. Matrix / RHS Allocation                    0.000086        0.000086             0.000
-4. System Matrix Setup                        0.000351        0.000351             0.000
-5. LU Factorization                           0.012229        0.001498             0.000
-6. System Solution                            0.000063        0.000064             0.000
+3. Matrix / RHS Allocation                    0.000078        0.000078             0.000
+4. System Matrix Setup                        0.000664        0.000703             0.000
+5. LU Factorization                           0.017678        0.001639             0.000
+6. System Solution                            0.000068        0.000068             0.000
 ----------------------------------------------------------------------------------------
-TOTAL                                         0.013149        0.002310             0.000
+TOTAL                                         0.019078        0.003142             0.000
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 0.012229 s
-System solution CPU time                                   : 0.000063 s
-Total direct solver CPU time                               : 0.012292 s
+LU factorization CPU time                                  : 0.017678 s
+System solution CPU time                                   : 0.000068 s
+Total direct solver CPU time                               : 0.017746 s
 
-LU factorization wall time                                 : 0.001498 s
-System solution wall time                                  : 0.000064 s
-Total direct solver wall time                              : 0.001561 s
+LU factorization wall time                                 : 0.001639 s
+System solution wall time                                  : 0.000068 s
+Total direct solver wall time                              : 0.001707 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 215.328 MB
-Process memory after simulation                            : 215.328 MB
+Process memory before simulation                           : 213.293 MB
+Process memory after simulation                            : 213.293 MB
 Net process memory change                                  : 0.000 MB
 
 System matrix storage                                      : 1.101685 MB
@@ -306,34 +306,34 @@ PERFORMANCE OF MAJOR COMPUTATIONAL STEPS
 ----------------------------------------------------------------------------------------------------
 Computational Step                        CPU Time [s]   Wall Time [s] Delta Memory [MB]
 ----------------------------------------------------------------------------------------
-1. Mesh Setup                                 0.000537        0.000538             0.012
+1. Mesh Setup                                 0.000557        0.000557             0.012
 2. Mesh Validation                             SKIPPED         SKIPPED               ---
-3. Matrix / RHS Allocation                    0.000297        0.000301             0.453
-4. System Matrix Setup                        0.002497        0.002499            16.066
-5. LU Factorization                          19.241602        0.846712            18.648
-6. System Solution                            0.022883        0.001299             0.000
+3. Matrix / RHS Allocation                    0.000207        0.000210             0.133
+4. System Matrix Setup                        0.003305        0.003687            16.191
+5. LU Factorization                          23.193475        1.037472            18.566
+6. System Solution                            0.021768        0.001112             0.000
 ----------------------------------------------------------------------------------------
-TOTAL                                        19.549501        0.862736            35.180
+TOTAL                                        23.566852        1.058129            34.902
 
 ----------------------------------------------------------------------------------------------------
 DIRECT SOLVER SUMMARY
 ----------------------------------------------------------------------------------------------------
 Solution method                                            : LU decomposition with partial pivoting
 
-LU factorization CPU time                                  : 19.241602 s
-System solution CPU time                                   : 0.022883 s
-Total direct solver CPU time                               : 19.264485 s
+LU factorization CPU time                                  : 23.193475 s
+System solution CPU time                                   : 0.021768 s
+Total direct solver CPU time                               : 23.215242 s
 
-LU factorization wall time                                 : 0.846712 s
-System solution wall time                                  : 0.001299 s
-Total direct solver wall time                              : 0.848010 s
+LU factorization wall time                                 : 1.037472 s
+System solution wall time                                  : 0.001112 s
+Total direct solver wall time                              : 1.038584 s
 
 ----------------------------------------------------------------------------------------------------
 MEMORY USAGE
 ----------------------------------------------------------------------------------------------------
-Process memory before simulation                           : 215.328 MB
-Process memory after simulation                            : 250.508 MB
-Net process memory change                                  : 35.180 MB
+Process memory before simulation                           : 213.293 MB
+Process memory after simulation                            : 248.195 MB
+Net process memory change                                  : 34.902 MB
 
 System matrix storage                                      : 18.566895 MB
 Temperature vector storage                                 : 0.011902 MB
@@ -367,9 +367,9 @@ CSV number of temperature values                           : 1,560
 ====================================================================================================
      h [m]           N     Matrix MB     Setup CPU        LU CPU     Solve CPU    Direct CPU     Total CPU
 ----------------------------------------------------------------------------------------------------------
-   0.02000          90         0.062      0.000100      0.000118      0.000035      0.000153      0.000545
-   0.01000         380         1.102      0.000351      0.012229      0.000063      0.012292      0.013149
-   0.00500       1,560        18.567      0.002497     19.241602      0.022883     19.264485     19.549501
+   0.02000          90         0.062      0.000099      0.000112      0.000033      0.000145      0.000515
+   0.01000         380         1.102      0.000664      0.017678      0.000068      0.017746      0.019078
+   0.00500       1,560        18.567      0.003305     23.193475      0.021768     23.215242     23.566852
 ----------------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
