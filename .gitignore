@@ -179,3 +179,8 @@ Session.vim
 # Assignment 2/...
 # etc.
 # ==============================================================================
+
+# Simulation output
+Dumps/
+*.csv
+*.gif
