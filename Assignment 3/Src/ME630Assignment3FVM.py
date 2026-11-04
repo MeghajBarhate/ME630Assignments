@@ -148,15 +148,25 @@ def Solve5(aP,aE,aW,aN,aS,b,periodicX):
     return solution.reshape(nI,nJ)
 
 
-def main():
+def main(case):
     # ====================== 1. CASE SETUP (students edit here) ==============
-    caseName='stokes2'  # 'channel' | 'couette' | 'stokes1' | 'stokes2'
+    if(case== 1):
+        caseName='channel'
+    elif(case== 2):
+        caseName='couette'
+    elif(case== 3):
+        caseName='stokes1'
+    elif(case== 4):
+        caseName='stokes2'
+    else:
+        raise ValueError(f'Unknown case number "{case}"')
+    
     omega=0.0
 
     if caseName=='channel':
         # Developing channel flow, started from rest
         L=10; H=1                   # Domain length and height [m]
-        Nx=100; Ny=20               # Number of pressure cells
+        Nx=100; Ny=40               # Number of pressure cells
         rho=1; mu=0.01              # Re = rho*U0*H/mu = 100
         U0=1                        # Inlet velocity [m/s]
         xBC='inlet-outlet'
@@ -166,6 +176,8 @@ def main():
         dpdx=0                      # Not used with inlet-outlet
         dt=0.25; tEnd=60            # Time step and end time [s]
         tOut=np.array([1,2,5,10,20,60],dtype=float)
+        entryLengthAnalytical=0.05*(rho*U0*H/mu)*H
+        entryLengthNumerical = None
         stopWhenSteady=True
 
     elif caseName=='couette':
@@ -491,6 +503,35 @@ def main():
         axes[1].legend(loc='upper center',bbox_to_anchor=(0.5,-0.3),
                        ncol=4,frameon=False)
         fig.subplots_adjust(left=0.12,right=0.91,top=0.88,bottom=0.2,hspace=0.64)
+        '''
+        =======
+        ANSWER A1.2
+        =======
+        '''
+        # Centreline velocity from the final solution
+        centrelineVelocity=0.5*(uLast[:,Ny//2-1]+uLast[:,Ny//2])
+        targetVelocity=0.99*1.5*U0
+        # First x-location where centreline velocity reaches 99%
+        indices=np.where(centrelineVelocity>=targetVelocity)[0]
+        if len(indices)>0:
+            i99=indices[0]
+            entryLengthNumerical=xu[i99]
+            axes[0].axvline(entryLengthNumerical,color='purple',linestyle='--',linewidth=2.5,label=f'Numerical: {entryLengthNumerical:.3f} m')
+        # Analytical entrance length
+        axes[0].axvline(entryLengthAnalytical,color='red',linestyle='--',linewidth=2.5,label=f'Analytical: {entryLengthAnalytical:.3f} m')
+        # Entrance length legend
+        axes[0].legend(loc='upper right',fontsize=10,frameon=True,facecolor='white',framealpha=0.9)
+        # Print entrance lengths
+        print('\nHydrodynamic Entrance Lengths')
+        print(f'Analytical : {entryLengthAnalytical:.6f} m')
+        if entryLengthNumerical is not None:
+            print(f'Numerical  : {entryLengthNumerical:.6f} m')
+            print(f'Difference : {abs(entryLengthNumerical-entryLengthAnalytical):.6f} m')
+        else:
+            print('Numerical  : 99% threshold not reached within the domain')
+        '''
+        =======
+        '''
 
     # ---- Figure 3: SIMPLE iterations needed per time step ----
     fig,ax=plt.subplots(num='SIMPLE iterations',figsize=(11,6.5))
@@ -504,6 +545,17 @@ def main():
     fig.subplots_adjust(left=0.12,right=0.96,top=0.86,bottom=0.26)
     plt.show()
 
-
 if __name__=='__main__':
-    main()
+    print('='*90, '\n')
+    print('ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047')
+    print('\n'+'='*90)
+
+    print('\nAvailable cases:')
+    print('1.  channel  - Developing flow between two fixed plates, started from rest')
+    print('2.  couette  - Start-up of Couette flow: upper plate starts moving')
+    print('3.  stokes1  - Stokes first problem: plate impulsively started')
+    print('4.  stokes2  - Stokes second problem: plate oscillating in its own plane')
+    case = int(input('Enter the case number : '))
+    print('\n'+'='*90)
+
+    main(case)
