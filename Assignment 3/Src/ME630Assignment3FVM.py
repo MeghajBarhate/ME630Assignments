@@ -164,6 +164,11 @@ def main(case):
     omega=0.0
 
     if caseName=='channel':
+    '''
+        =======
+        ANSWER A1.3 - Obtained by changing Nx, Ny and dt values here.
+        =======
+        '''
         # Developing channel flow, started from rest
         L=10; H=1                   # Domain length and height [m]
         Nx=100; Ny=40               # Number of pressure cells
