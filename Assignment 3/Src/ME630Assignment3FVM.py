@@ -179,7 +179,12 @@ def main(case):
         southBC='wall'; uSouth=lambda t: 0     # Fixed lower wall
         northBC='wall'; uNorth=lambda t: 0     # Fixed upper wall
         dpdx=0                      # Not used with inlet-outlet
-        dt=0.25; tEnd=60            # Time step and end time [s]
+        '''
+        =======
+        ANSWER A1.4
+        =====
+        '''
+        dt= 0.02; tEnd=60            # Time step and end time [s]
         tOut=np.array([1,2,5,10,20,60],dtype=float)
         entryLengthAnalytical=0.05*(rho*U0*H/mu)*H
         entryLengthNumerical = None
