@@ -164,7 +164,7 @@ def main(case):
     omega=0.0
 
     if caseName=='channel':
-    '''
+        '''
         =======
         ANSWER A1.3 - Obtained by changing Nx, Ny and dt values here.
         =======
