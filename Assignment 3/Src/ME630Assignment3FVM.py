@@ -456,7 +456,15 @@ def main(case):
     colors=plt.get_cmap('tab10')(np.linspace(0,1,len(tOut)))
 
     # ---- Figure 1: velocity profiles vs exact solution ----
-    fig,ax=plt.subplots(num='Velocity profiles',figsize=(11,8))
+
+    # ====================== ADDED CODE START ======================
+    if caseName=='stokes1':
+        fig,(ax,axError)=plt.subplots(1,2,num='Velocity profiles',figsize=(15,7))
+        meanAbsoluteError=np.zeros(len(keep))
+    else:
+        fig,ax=plt.subplots(num='Velocity profiles',figsize=(11,8))
+    # ====================== ADDED CODE END ========================
+
     for k in keep:
         uNum=np.mean(uSnap[k][:Nx,:],axis=0) if isPer else uSnap[k][Nx,:]
         ax.plot(ExactProfile(caseName,yy,tSnap[k],parameters)/U0,yy/H,'-',color=colors[k],linewidth=2,label='_nolegend_')
@@ -467,6 +475,13 @@ def main(case):
         else:
             label=f't = {tSnap[k]:g} s'
         ax.plot(uNum[::step]/U0,yc[::step]/H,'o',color=colors[k],markersize=5,label=label)
+
+        # ====================== ADDED CODE START ======================
+        if caseName=='stokes1':
+            analyticalVelocity=ExactProfile(caseName,yc,tSnap[k],parameters)
+            meanAbsoluteError[np.where(keep==k)[0][0]]=np.mean(np.abs(uNum-analyticalVelocity))
+        # ====================== ADDED CODE END ========================
+
     ax.set_xlabel(r'Normalised velocity, $u/U_0$',labelpad=10)
     ax.set_ylabel(r'Normalised height, $y/H$',labelpad=10)
     if caseName=='channel':
@@ -484,7 +499,77 @@ def main(case):
     if len(keep)>0:
         ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.16),ncol=min(4,len(keep)),
                   frameon=False,title='Time / Phase',title_fontsize=12)
-    fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
+
+    # ====================== ADDED CODE START ======================
+    if caseName=='stokes1':
+        axError.plot(tSnap[keep],meanAbsoluteError,'o-',color='tab:red',linewidth=2,markersize=6)
+        axError.set_xlabel('Time [s]',labelpad=10)
+        axError.set_ylabel('Mean Absolute Error [m/s]',labelpad=10)
+        axError.set_title('Mean Absolute Error vs Time',pad=18)
+        axError.grid(True,alpha=0.3)
+        axError.tick_params(axis='both',which='major',length=5)
+        fig.subplots_adjust(left=0.08,right=0.96,top=0.85,bottom=0.29,wspace=0.3)
+    else:
+        fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
+    # ====================== ADDED CODE END ========================
+
+
+    # ====================== Stokes 1: Similarity Solution ======================
+    if caseName=='stokes1':
+        fig,ax=plt.subplots(num='Stokes 1 Similarity Solution',figsize=(10,7))
+
+        for k in keep:
+            t=tSnap[k]
+            eta=yc/(2*np.sqrt(nu*t))
+            uNum=np.mean(uSnap[k][:Nx,:],axis=0)
+
+            ax.plot(eta,uNum/U0,'o',color=colors[k],markersize=3,
+                    label=f't = {t:g} s')
+
+        etaExact=np.linspace(0,3,400)
+        ax.plot(etaExact,erfc(etaExact),'k-',linewidth=2,
+                label='Analytical Solution')
+
+        ax.set_xlabel(r'$\eta=y/(2\sqrt{\nu t})$',labelpad=10)
+        ax.set_ylabel(r'$u/U_0$',labelpad=10)
+        ax.set_title('Stokes First Problem\nSimilarity Profile',pad=18)
+        ax.set_xlim(0,3)
+        ax.set_ylim(0,1.05)
+        ax.grid(True,alpha=0.3)
+        ax.legend(loc='upper right',frameon=False)
+
+        fig.tight_layout()
+    # ====================== End Similarity Solution ===========================
+
+
+    # ====================== Stokes 1: Wall Shear Stress ======================
+    if caseName=='stokes1':
+        timeValues=tSnap[keep]
+        numericalShear=np.zeros(len(keep))
+        analyticalShear=-mu*U0/np.sqrt(np.pi*nu*timeValues)
+
+        for i,k in enumerate(keep):
+            uNum=np.mean(uSnap[k][:Nx,:],axis=0)
+            numericalShear[i]=mu*(uNum[0]-U0)/(dy/2)
+
+        fig,ax=plt.subplots(num='Stokes 1 Wall Shear Stress',figsize=(10,7))
+
+        ax.loglog(timeValues,-numericalShear,'o-',linewidth=2,markersize=6,
+                  label='FVM Solution')
+        ax.loglog(timeValues,-analyticalShear,'k--',linewidth=2,
+                  label='Analytical Solution')
+
+        ax.set_xlabel('Time [s]',labelpad=10)
+        ax.set_ylabel(r'$|\tau_w|$ [Pa]',labelpad=10)
+        ax.set_title('Stokes First Problem\nWall Shear Stress',pad=18)
+        ax.grid(True,which='both',alpha=0.3)
+        ax.legend(loc='upper right',frameon=False)
+
+        fig.tight_layout()
+    # ====================== End Wall Shear Stress ===========================
+
+
+
 
     # ---- Figure 2 (channel only): flow field and centreline development ----
     if caseName=='channel' and len(keep)>0:
