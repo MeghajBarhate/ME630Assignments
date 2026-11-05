@@ -284,6 +284,12 @@ def main(case):
     uSnap=[None]*len(tOut)
     tSnap=np.full(len(tOut),np.nan)
     nInner=np.zeros(nSteps,dtype=int)
+    
+    # Velocity history at the penetration depth
+    if caseName=='stokes2':
+        delta=np.sqrt(2*nu/omega)
+        timeHistory=[]
+        velocityHistory=[]
 
     print(f'Case "{caseName}": {Nx} x {Ny} cells, dt = {dt:g} s, {nSteps} steps')
     print(f'Courant number U0*dt/dx = {U0*dt/dx:.2f}, diffusion number nu*dt/dy^2 = {nu*dt/dy**2:.2f}')
@@ -412,6 +418,13 @@ def main(case):
                 break
 
         nInner[n-1]=it
+        # Store velocity at y=delta over the last period
+        if caseName=='stokes2' and t>=tEnd-T-1e-10:
+            uMean=np.mean(u[:Nx,:],axis=0)
+            uDelta=np.interp(delta,yc,uMean)
+            timeHistory.append(t)
+            velocityHistory.append(uDelta/U0)
+
         if it==maxInner:
             print(f'Warning: step {n}: SIMPLE not converged (mass {massRes:.1e}, change {change:.1e})')
 
@@ -447,6 +460,53 @@ def main(case):
         print(f'  {tSnap[k]:7.3f}   {error:.2e}')
     if caseName=='channel':
         print('(channel: compared with the fully developed Poiseuille profile at the outlet)')
+
+
+    # ---- Stokes second problem: amplitude and phase ----
+    if caseName=='stokes2':
+        timeHistory=np.array(timeHistory)
+        velocityHistory=np.array(velocityHistory)
+
+        fitMatrix=np.column_stack((
+            np.cos(omega*timeHistory),
+            np.sin(omega*timeHistory),
+            np.ones_like(timeHistory)
+        ))
+
+        a,b,c=np.linalg.lstsq(
+            fitMatrix,velocityHistory,rcond=None
+        )[0]
+
+        amplitude=np.sqrt(a**2+b**2)
+        phaseLag=np.arctan2(b,a)
+
+        exactAmplitude=np.exp(-1)
+        exactPhaseLag=1.0
+
+        stepsPerPeriod=round(T/dt)
+        cellsPerDelta=delta/dy
+
+        amplitudeError=100*abs(amplitude-exactAmplitude)/exactAmplitude
+        phaseError=abs(phaseLag-exactPhaseLag)
+
+        print('\n--- Stokes II: Convergence results ---')
+        print(f'Steps per period   : {stepsPerPeriod}')
+        print(f'Ny                 : {Ny}')
+        print(f'Cells per delta    : {cellsPerDelta:.4f}')
+        print(f'Amplitude          : {amplitude:.8f}')
+        print(f'Exact amplitude    : {exactAmplitude:.8f}')
+        print(f'Amplitude error [%]: {amplitudeError:.4f}')
+        print(f'Phase lag [rad]    : {phaseLag:.8f}')
+        print(f'Exact lag [rad]    : {exactPhaseLag:.8f}')
+        print(f'Phase error [rad]  : {phaseError:.8e}')
+
+        if amplitudeError<=1.0:
+            print('Amplitude accuracy : PASS (within 1%)')
+        else:
+            print('Amplitude accuracy : FAIL (above 1%)')
+
+    # ====================== 7. Figures ======================================
+
 
     # ====================== 7. Figures ======================================
     plt.rcParams.update({'font.size':12,'axes.titlesize':17,'axes.titleweight':'semibold',
@@ -627,6 +687,36 @@ def main(case):
         '''
         =======
         '''
+    '''
+    =======
+    ANSWER A3.3
+    =======
+    '''
+    if caseName=='stokes2':
+        k=np.sqrt(omega/(2*nu))
+        time=np.linspace(tEnd-T,tEnd,500)
+        phase=omega*time
+
+        plateVelocity=np.cos(phase)
+        wallShear=-np.cos(phase+np.pi/4)
+
+        fig,ax=plt.subplots(figsize=(11,6))
+
+        ax.plot(time,plateVelocity,'b-',linewidth=2,
+                label=r'Plate velocity, $U_w/U_0$')
+
+        ax.plot(time,wallShear,'r--',linewidth=2,
+                label=r'Wall shear, $\tau_w/(\sqrt{2}\mu kU_0)$')
+
+        ax.set_xlabel('Time [s]')
+        ax.set_ylabel('Normalised value')
+        ax.set_title('Stokes Second Problem: Wall Shear Stress')
+        ax.grid(True,alpha=0.3)
+        ax.legend()
+
+        fig.tight_layout()
+        plt.show()
+
 
     # ---- Figure 3: SIMPLE iterations needed per time step ----
     fig,ax=plt.subplots(num='SIMPLE iterations',figsize=(11,6.5))
