@@ -158,6 +158,8 @@ def main(case):
         caseName='stokes1'
     elif(case== 4):
         caseName='stokes2'
+    elif(case== 5):
+        caseName='bfs'
     else:
         raise ValueError(f'Unknown case number "{case}"')
     
@@ -216,7 +218,7 @@ def main(case):
         southBC='wall'; uSouth=lambda t: U0  # Plate impulsively started
         northBC='slip'; uNorth=lambda t: 0   # Far field: zero shear
         dpdx=0
-        dt=0.002; tEnd=1
+        dt=0.0005; tEnd=1
         tOut=np.array([0.05,0.1,0.25,0.5,1],dtype=float)
         stopWhenSteady=False
 
@@ -234,6 +236,25 @@ def main(case):
         dt=T/400; tEnd=4*T          # Four periods; start-up transient decays fast
         tOut=tEnd-T+np.arange(8)*T/8  # Eight phases of the last period
         stopWhenSteady=False
+    
+    elif caseName=='bfs':
+        # Backward-facing step (Geometry from Armaly)
+        S=1; h=17/16; H=S+h
+        L=40*S
+        Ny=33; Nx=320
+        rho=1; U0=1
+        Re=100
+        mu=rho*U0*(2*h)/Re
+        xBC='inlet-outlet'
+        # Parabolic inlet profile above the step
+        uInlet=lambda y,t: np.where(y>S,6*U0*((y-S)/h)*(1-(y-S)/h),0.0)
+        southBC='wall'; uSouth=lambda t: 0
+        northBC='wall'; uNorth=lambda t: 0
+        dpdx=0
+        dt=0.05; tEnd=100
+        tOut=np.array([1,5,10,20,50,100],dtype=float)
+        stopWhenSteady=True
+
 
     else:
         raise ValueError(f'Unknown caseName "{caseName}"')
@@ -447,63 +468,113 @@ def main(case):
     # ====================== 6. Comparison with exact solutions ==============
     # Wall speeds for the exact solutions: the plates are taken to move at
     # constant speed for t > 0 (true for the couette and stokes1 cases)
-    parameters={'U0':U0,'H':H,'nu':nu,'mu':mu,'dpdx':dpdx,'omega':omega,'Ubot':uSouth(tEnd),'Utop':uNorth(tEnd)}
-    keep=np.flatnonzero(~np.isnan(tSnap)) # Snapshots actually reached
-    yy=np.linspace(0,H,400)
-    print('\n   t [s]   max|u - u_exact| / U0')
-    for k in keep:
-        if isPer:
-            uNum=np.mean(uSnap[k][:Nx,:],axis=0) # No x-variation: average over x
-        else:
-            uNum=uSnap[k][Nx,:]                 # Channel: outlet profile
-        error=np.max(np.abs(uNum-ExactProfile(caseName,yc,tSnap[k],parameters)))/U0
-        print(f'  {tSnap[k]:7.3f}   {error:.2e}')
-    if caseName=='channel':
-        print('(channel: compared with the fully developed Poiseuille profile at the outlet)')
+    if caseName=='bfs':
+        # Cell-centred velocities
+        uCenter=0.5*(u[:-1,:]+u[1:,:])/U0
+        vCenter=0.5*(v[:,:-1]+v[:,1:])/U0
+        X,Y=np.meshgrid(xc,yc,indexing='ij')
+
+        # Figure 1: streamwise velocity field
+        fig,ax=plt.subplots(figsize=(13,5))
+        contour=ax.contourf(X,Y,uCenter,levels=40,cmap='coolwarm')
+        fig.colorbar(contour,ax=ax,label=r'$u/U_0$')
+        ax.plot([0,0],[0,S],'k-',linewidth=4)
+        ax.set(xlabel=r'$x/S$',ylabel=r'$y/S$',
+               title='BFS: Streamwise Velocity')
+        ax.set_xlim(0,L); ax.set_ylim(0,H)
+        fig.tight_layout()
+
+        # Figure 2: recirculation near the step
+        fig,ax=plt.subplots(figsize=(12,5))
+        contour=ax.contourf(X,Y,uCenter,levels=40,cmap='coolwarm')
+        fig.colorbar(contour,ax=ax,label=r'$u/U_0$')
+
+        if np.min(uCenter)<0<np.max(uCenter):
+            ax.contour(X,Y,uCenter,levels=[0],
+                       colors='black',linewidths=1.5)
+
+        ax.quiver(X[::5,::2],Y[::5,::2],
+                  uCenter[::5,::2],vCenter[::5,::2],
+                  color='black',alpha=0.5,scale=35)
+
+        ax.plot([0,0],[0,S],'k-',linewidth=4)
+        ax.set(xlabel=r'$x/S$',ylabel=r'$y/S$',
+               title='BFS: Recirculation Region')
+        ax.set_xlim(0,15); ax.set_ylim(0,H)
+        fig.tight_layout()
+
+        # Figure 3: downstream velocity profiles
+        fig,ax=plt.subplots(figsize=(9,7))
+
+        for station in [1,2,4,6,8,10,15,20,30,40]:
+            i=np.argmin(np.abs(xc-station*S))
+            ax.plot(uCenter[i,:],yc/S,label=f'x/S = {station}')
+
+        ax.axvline(0,color='black',linewidth=0.8)
+        ax.set(xlabel=r'$u/U_0$',ylabel=r'$y/S$',
+               title='BFS: Downstream Velocity Profiles')
+        ax.grid(True,alpha=0.3)
+        ax.legend(loc='center left',bbox_to_anchor=(1,0.5))
+        fig.tight_layout()
+
+    elif(caseName != 'bfs'):
+        parameters={'U0':U0,'H':H,'nu':nu,'mu':mu,'dpdx':dpdx,'omega':omega,'Ubot':uSouth(tEnd),'Utop':uNorth(tEnd)}
+        keep=np.flatnonzero(~np.isnan(tSnap)) # Snapshots actually reached
+        yy=np.linspace(0,H,400)
+        print('\n   t [s]   max|u - u_exact| / U0')
+        for k in keep:
+            if isPer:
+                uNum=np.mean(uSnap[k][:Nx,:],axis=0) # No x-variation: average over x
+            else:
+                uNum=uSnap[k][Nx,:]                 # Channel: outlet profile
+            error=np.max(np.abs(uNum-ExactProfile(caseName,yc,tSnap[k],parameters)))/U0
+            print(f'  {tSnap[k]:7.3f}   {error:.2e}')
+        if caseName=='channel':
+            print('(channel: compared with the fully developed Poiseuille profile at the outlet)')
 
 
-    # ---- Stokes second problem: amplitude and phase ----
-    if caseName=='stokes2':
-        timeHistory=np.array(timeHistory)
-        velocityHistory=np.array(velocityHistory)
+        # ---- Stokes second problem: amplitude and phase ----
+        if caseName=='stokes2':
+            timeHistory=np.array(timeHistory)
+            velocityHistory=np.array(velocityHistory)
 
-        fitMatrix=np.column_stack((
-            np.cos(omega*timeHistory),
-            np.sin(omega*timeHistory),
-            np.ones_like(timeHistory)
-        ))
+            fitMatrix=np.column_stack((
+                np.cos(omega*timeHistory),
+                np.sin(omega*timeHistory),
+                np.ones_like(timeHistory)
+            ))
 
-        a,b,c=np.linalg.lstsq(
-            fitMatrix,velocityHistory,rcond=None
-        )[0]
+            a,b,c=np.linalg.lstsq(
+                fitMatrix,velocityHistory,rcond=None
+            )[0]
 
-        amplitude=np.sqrt(a**2+b**2)
-        phaseLag=np.arctan2(b,a)
+            amplitude=np.sqrt(a**2+b**2)
+            phaseLag=np.arctan2(b,a)
 
-        exactAmplitude=np.exp(-1)
-        exactPhaseLag=1.0
+            exactAmplitude=np.exp(-1)
+            exactPhaseLag=1.0
 
-        stepsPerPeriod=round(T/dt)
-        cellsPerDelta=delta/dy
+            stepsPerPeriod=round(T/dt)
+            cellsPerDelta=delta/dy
 
-        amplitudeError=100*abs(amplitude-exactAmplitude)/exactAmplitude
-        phaseError=abs(phaseLag-exactPhaseLag)
+            amplitudeError=100*abs(amplitude-exactAmplitude)/exactAmplitude
+            phaseError=abs(phaseLag-exactPhaseLag)
 
-        print('\n--- Stokes II: Convergence results ---')
-        print(f'Steps per period   : {stepsPerPeriod}')
-        print(f'Ny                 : {Ny}')
-        print(f'Cells per delta    : {cellsPerDelta:.4f}')
-        print(f'Amplitude          : {amplitude:.8f}')
-        print(f'Exact amplitude    : {exactAmplitude:.8f}')
-        print(f'Amplitude error [%]: {amplitudeError:.4f}')
-        print(f'Phase lag [rad]    : {phaseLag:.8f}')
-        print(f'Exact lag [rad]    : {exactPhaseLag:.8f}')
-        print(f'Phase error [rad]  : {phaseError:.8e}')
+            print('\n--- Stokes II: Convergence results ---')
+            print(f'Steps per period   : {stepsPerPeriod}')
+            print(f'Ny                 : {Ny}')
+            print(f'Cells per delta    : {cellsPerDelta:.4f}')
+            print(f'Amplitude          : {amplitude:.8f}')
+            print(f'Exact amplitude    : {exactAmplitude:.8f}')
+            print(f'Amplitude error [%]: {amplitudeError:.4f}')
+            print(f'Phase lag [rad]    : {phaseLag:.8f}')
+            print(f'Exact lag [rad]    : {exactPhaseLag:.8f}')
+            print(f'Phase error [rad]  : {phaseError:.8e}')
 
-        if amplitudeError<=1.0:
-            print('Amplitude accuracy : PASS (within 1%)')
-        else:
-            print('Amplitude accuracy : FAIL (above 1%)')
+            if amplitudeError<=1.0:
+                print('Amplitude accuracy : PASS (within 1%)')
+            else:
+                print('Amplitude accuracy : FAIL (above 1%)')
 
     # ====================== 7. Figures ======================================
 
@@ -520,59 +591,59 @@ def main(case):
     # ====================== ADDED CODE START ======================
     if caseName=='stokes1':
         fig,(ax,axError)=plt.subplots(1,2,num='Velocity profiles',figsize=(15,7))
-        meanAbsoluteError=np.zeros(len(keep))
-    else:
+        maximumAbsoluteError=np.zeros(len(keep))
+    elif (caseName != 'bfs'):
         fig,ax=plt.subplots(num='Velocity profiles',figsize=(11,8))
     # ====================== ADDED CODE END ========================
 
-    for k in keep:
-        uNum=np.mean(uSnap[k][:Nx,:],axis=0) if isPer else uSnap[k][Nx,:]
-        ax.plot(ExactProfile(caseName,yy,tSnap[k],parameters)/U0,yy/H,'-',color=colors[k],linewidth=2,label='_nolegend_')
-        step=max(1,round(Ny/25))  # Thin out the symbols
-        if caseName=='stokes2':
-            phase=round((omega*tSnap[k]%(2*np.pi))*180/np.pi)
-            label=rf'$\omega t = {phase}^\circ$'
-        else:
-            label=f't = {tSnap[k]:g} s'
-        ax.plot(uNum[::step]/U0,yc[::step]/H,'o',color=colors[k],markersize=5,label=label)
+    if(caseName != 'bfs'):
+        for k in keep:
+            uNum=np.mean(uSnap[k][:Nx,:],axis=0) if isPer else uSnap[k][Nx,:]
+            ax.plot(ExactProfile(caseName,yy,tSnap[k],parameters)/U0,yy/H,'-',color=colors[k],linewidth=2,label='_nolegend_')
+            step=max(1,round(Ny/25))  # Thin out the symbols
+            if caseName=='stokes2':
+                phase=round((omega*tSnap[k]%(2*np.pi))*180/np.pi)
+                label=rf'$\omega t = {phase}^\circ$'
+            else:
+                label=f't = {tSnap[k]:g} s'
+            ax.plot(uNum[::step]/U0,yc[::step]/H,'o',color=colors[k],markersize=5,label=label)
 
-        # ====================== ADDED CODE START ======================
-        if caseName=='stokes1':
-            analyticalVelocity=ExactProfile(caseName,yc,tSnap[k],parameters)
-            meanAbsoluteError[np.where(keep==k)[0][0]]=np.mean(np.abs(uNum-analyticalVelocity))
-        # ====================== ADDED CODE END ========================
-
-    ax.set_xlabel(r'Normalised velocity, $u/U_0$',labelpad=10)
-    ax.set_ylabel(r'Normalised height, $y/H$',labelpad=10)
-    if caseName=='channel':
-        ax.set_title('Developing Channel Flow\nFVM vs Fully Developed Poiseuille Profile',pad=18)
-    elif caseName=='couette':
-        ax.set_title('Start-up Couette Flow\nFVM vs Analytical Series Solution',pad=18)
-    elif caseName=='stokes1':
-        ax.set_title('Stokes First Problem\nFVM vs Analytical erfc Solution',pad=18)
-        ax.set_ylim(0,0.5)
-    elif caseName=='stokes2':
-        ax.set_title('Stokes Second Problem\nFVM vs Analytical Periodic Solution',pad=18)
-        ax.set_ylim(0,0.35)
-    ax.grid(True,alpha=0.3)
-    ax.tick_params(axis='both',which='major',length=5)
-    if len(keep)>0:
-        ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.16),ncol=min(4,len(keep)),
-                  frameon=False,title='Time / Phase',title_fontsize=12)
+            # ====================== ADDED CODE START ======================
+            if caseName=='stokes1':
+                analyticalVelocity=ExactProfile(caseName,yc,tSnap[k],parameters)
+                maximumAbsoluteError[np.where(keep==k)[0][0]]=np.max(np.abs(uNum-analyticalVelocity))/U0
+            # ====================== ADDED CODE END ========================
+            ax.set_xlabel(r'Normalised velocity, $u/U_0$',labelpad=10)
+            ax.set_ylabel(r'Normalised height, $y/H$',labelpad=10)
+            if caseName=='channel':
+                ax.set_title('Developing Channel Flow\nFVM vs Fully Developed Poiseuille Profile',pad=18)
+            elif caseName=='couette':
+                ax.set_title('Start-up Couette Flow\nFVM vs Analytical Series Solution',pad=18)
+            elif caseName=='stokes1':
+                ax.set_title('Stokes First Problem\nFVM vs Analytical erfc Solution',pad=18)
+                ax.set_ylim(0,0.5)
+            elif caseName=='stokes2':
+                ax.set_title('Stokes Second Problem\nFVM vs Analytical Periodic Solution',pad=18)
+                ax.set_ylim(0,0.35)
+            ax.grid(True,alpha=0.3)
+            ax.tick_params(axis='both',which='major',length=5)
+            if len(keep)>0:
+                ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.16),ncol=min(4,len(keep)),
+                        frameon=False,title='Time / Phase',title_fontsize=12)
 
     # ====================== ADDED CODE START ======================
     if caseName=='stokes1':
-        axError.plot(tSnap[keep],meanAbsoluteError,'o-',color='tab:red',linewidth=2,markersize=6)
+        axError.plot(tSnap[keep],maximumAbsoluteError,'o-',color='tab:red',linewidth=2,markersize=6)
         axError.set_xlabel('Time [s]',labelpad=10)
-        axError.set_ylabel('Mean Absolute Error [m/s]',labelpad=10)
-        axError.set_title('Mean Absolute Error vs Time',pad=18)
+        axError.set_ylabel('Max Absolute Error [m/s]',labelpad=10)
+        axError.set_title('Max Absolute Error vs Time',pad=18)
         axError.grid(True,alpha=0.3)
         axError.tick_params(axis='both',which='major',length=5)
         fig.subplots_adjust(left=0.08,right=0.96,top=0.85,bottom=0.29,wspace=0.3)
     else:
         fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
-    # ====================== ADDED CODE END ========================
 
+    # ====================== ADDED CODE END ========================
 
     # ====================== Stokes 1: Similarity Solution ======================
     if caseName=='stokes1':
@@ -627,8 +698,6 @@ def main(case):
 
         fig.tight_layout()
     # ====================== End Wall Shear Stress ===========================
-
-
 
 
     # ---- Figure 2 (channel only): flow field and centreline development ----
@@ -687,6 +756,7 @@ def main(case):
         '''
         =======
         '''
+
     '''
     =======
     ANSWER A3.3
@@ -740,6 +810,7 @@ if __name__=='__main__':
     print('2.  couette  - Start-up of Couette flow: upper plate starts moving')
     print('3.  stokes1  - Stokes first problem: plate impulsively started')
     print('4.  stokes2  - Stokes second problem: plate oscillating in its own plane')
+    print('5.  bfs      - Backward-facing step flow (Armaly geometry)')
     case = int(input('Enter the case number : '))
     print('\n'+'='*90)
 
