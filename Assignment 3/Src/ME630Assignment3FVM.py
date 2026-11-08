@@ -243,7 +243,7 @@ def main(case):
         L=40*S
         Ny=33; Nx=320
         rho=1; U0=1
-        Re=100
+        Re=50
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -469,53 +469,232 @@ def main(case):
     # Wall speeds for the exact solutions: the plates are taken to move at
     # constant speed for t > 0 (true for the couette and stokes1 cases)
     if caseName=='bfs':
-        # Cell-centred velocities
-        uCenter=0.5*(u[:-1,:]+u[1:,:])/U0
-        vCenter=0.5*(v[:,:-1]+v[:,1:])/U0
-        X,Y=np.meshgrid(xc,yc,indexing='ij')
+        cellCenteredUVelocity=0.5*(u[:-1,:]+u[1:,:])
+        cellCenteredVVelocity=0.5*(v[:,:-1]+v[:,1:])
+        normalisedUVelocity=cellCenteredUVelocity/U0
+        normalisedVVelocity=cellCenteredVVelocity/U0
+        velocityMagnitude=np.sqrt(normalisedUVelocity**2+normalisedVVelocity**2)
+        pressureGridXCoordinates=xc/S
+        pressureGridYCoordinates=yc/S
+        # ============================================================
+        # 4a. Locate wall separation and reattachment points
+        # ============================================================
 
-        # Figure 1: streamwise velocity field
-        fig,ax=plt.subplots(figsize=(13,5))
-        contour=ax.contourf(X,Y,uCenter,levels=40,cmap='coolwarm')
-        fig.colorbar(contour,ax=ax,label=r'$u/U_0$')
-        ax.plot([0,0],[0,S],'k-',linewidth=4)
-        ax.set(xlabel=r'$x/S$',ylabel=r'$y/S$',
-               title='BFS: Streamwise Velocity')
-        ax.set_xlim(0,L); ax.set_ylim(0,H)
-        fig.tight_layout()
+        def findVelocitySignChanges(velocityProfile,xCoordinates):
+            crossingLocations=[]
 
-        # Figure 2: recirculation near the step
-        fig,ax=plt.subplots(figsize=(12,5))
-        contour=ax.contourf(X,Y,uCenter,levels=40,cmap='coolwarm')
-        fig.colorbar(contour,ax=ax,label=r'$u/U_0$')
+            for i in range(len(velocityProfile)-1):
+                velocityLeft=velocityProfile[i]
+                velocityRight=velocityProfile[i+1]
 
-        if np.min(uCenter)<0<np.max(uCenter):
-            ax.contour(X,Y,uCenter,levels=[0],
-                       colors='black',linewidths=1.5)
+                if velocityLeft*velocityRight<0:
+                    xLeft=xCoordinates[i]
+                    xRight=xCoordinates[i+1]
 
-        ax.quiver(X[::5,::2],Y[::5,::2],
-                  uCenter[::5,::2],vCenter[::5,::2],
-                  color='black',alpha=0.5,scale=35)
+                    zeroCrossing=xLeft-velocityLeft*(xRight-xLeft)/(velocityRight-velocityLeft)
+                    crossingLocations.append(zeroCrossing)
 
-        ax.plot([0,0],[0,S],'k-',linewidth=4)
-        ax.set(xlabel=r'$x/S$',ylabel=r'$y/S$',
-               title='BFS: Recirculation Region')
-        ax.set_xlim(0,15); ax.set_ylim(0,H)
-        fig.tight_layout()
+            return crossingLocations
 
-        # Figure 3: downstream velocity profiles
-        fig,ax=plt.subplots(figsize=(9,7))
+        bottomWallCrossings=findVelocitySignChanges(
+            normalisedUVelocity[:,0],pressureGridXCoordinates
+        )
 
-        for station in [1,2,4,6,8,10,15,20,30,40]:
-            i=np.argmin(np.abs(xc-station*S))
-            ax.plot(uCenter[i,:],yc/S,label=f'x/S = {station}')
+        topWallCrossings=findVelocitySignChanges(
+            normalisedUVelocity[:,-1],pressureGridXCoordinates
+        )
 
-        ax.axvline(0,color='black',linewidth=0.8)
-        ax.set(xlabel=r'$u/U_0$',ylabel=r'$y/S$',
-               title='BFS: Downstream Velocity Profiles')
-        ax.grid(True,alpha=0.3)
-        ax.legend(loc='center left',bbox_to_anchor=(1,0.5))
-        fig.tight_layout()
+        print(f'Bottom wall zero crossings (x/S): {bottomWallCrossings}')
+        print(f'Top wall zero crossings (x/S): {topWallCrossings}')
+
+        # ============================================================
+        # 1. Compute velocity field at pressure cell centres
+        # ============================================================
+
+        cellCenteredUVelocity=0.5*(u[:-1,:]+u[1:,:])
+        cellCenteredVVelocity=0.5*(v[:,:-1]+v[:,1:])
+
+        normalisedUVelocity=cellCenteredUVelocity/U0
+        normalisedVVelocity=cellCenteredVVelocity/U0
+
+        velocityMagnitude=np.sqrt(normalisedUVelocity**2+normalisedVVelocity**2)
+
+        # ============================================================
+        # 2. Prepare pressure grid coordinates and velocity fields
+        # ============================================================
+
+        pressureGridXCoordinates=xc/S
+        pressureGridYCoordinates=yc/S
+
+        # Matplotlib expects arrays of shape (Ny,Nx)
+        streamplotUVelocity=normalisedUVelocity.T
+        streamplotVVelocity=normalisedVVelocity.T
+        streamplotVelocityMagnitude=velocityMagnitude.T
+
+        xPlotMesh,yPlotMesh=np.meshgrid(
+            pressureGridXCoordinates,
+            pressureGridYCoordinates
+        )
+
+        # ============================================================
+        # 3. Prepare downstream velocity profiles
+        # ============================================================
+
+        downstreamStations=[1,2,4,6,8,10,15,20,30,40]
+        downstreamProfileData=[]
+
+        for station in downstreamStations:
+            nearestStreamwiseIndex=np.argmin(np.abs(xc-station*S))
+            downstreamProfileData.append((
+                station,
+                normalisedUVelocity[nearestStreamwiseIndex,:]
+            ))
+
+        # ============================================================
+        # 4. Prepare velocity vector sampling
+        # ============================================================
+
+        vectorSamplingStepX=5
+        vectorSamplingStepY=2
+
+        quiverXCoordinates=xPlotMesh[::vectorSamplingStepY,::vectorSamplingStepX]
+        quiverYCoordinates=yPlotMesh[::vectorSamplingStepY,::vectorSamplingStepX]
+
+        quiverUVelocity=streamplotUVelocity[::vectorSamplingStepY,::vectorSamplingStepX]
+        quiverVVelocity=streamplotVVelocity[::vectorSamplingStepY,::vectorSamplingStepX]
+        quiverVelocityMagnitude=streamplotVelocityMagnitude[::vectorSamplingStepY,::vectorSamplingStepX]
+
+        # ============================================================
+        # 5. Plot results
+        # ============================================================
+
+        figure,axes=plt.subplots(1,2,figsize=(17,7))
+
+        # ------------------------------------------------------------
+        # Left subplot: downstream velocity profiles
+        # ------------------------------------------------------------
+
+        profileAxis=axes[0]
+
+        for station,velocityProfile in downstreamProfileData:
+            profileAxis.plot(
+                velocityProfile,
+                pressureGridYCoordinates,
+                linewidth=2,
+                label=f'x/S = {station}'
+            )
+
+        profileAxis.axvline(0,color='black',linewidth=0.8)
+        profileAxis.set_xlabel(r'$u/U_0$')
+        profileAxis.set_ylabel(r'$y/S$')
+        profileAxis.set_title('Backward-Facing Step\nDownstream Velocity Profiles')
+        profileAxis.grid(True,alpha=0.3)
+        profileAxis.legend(loc='upper right',fontsize=9)
+
+        # ------------------------------------------------------------
+        # Right subplot: velocity vectors and streamlines
+        # ------------------------------------------------------------
+
+        flowFieldAxis=axes[1]
+
+        # Streamlines coloured using plasma
+        streamlinePlot=flowFieldAxis.streamplot(
+            pressureGridXCoordinates,
+            pressureGridYCoordinates,
+            streamplotUVelocity,
+            streamplotVVelocity,
+            color=streamplotVelocityMagnitude,
+            cmap='plasma',
+            density=2.0,
+            linewidth=1.2,
+            arrowsize=1.0
+        )
+
+        # Velocity vectors coloured using winter
+        quiverPlot=flowFieldAxis.quiver(
+            quiverXCoordinates,
+            quiverYCoordinates,
+            quiverUVelocity,
+            quiverVVelocity,
+            quiverVelocityMagnitude,
+            cmap='winter',
+            angles='xy',
+            scale_units='xy',
+            scale=None,
+            alpha=0.95
+        )
+
+
+        # ------------------------------------------------------------
+        # Mark wall separation and reattachment locations
+        # ------------------------------------------------------------
+
+        if len(bottomWallCrossings)>0:
+            flowFieldAxis.axvline(
+                bottomWallCrossings[0],
+                color='black',
+                linestyle='--',
+                linewidth=2,
+                label=f'Bottom wall: x/S = {bottomWallCrossings[0]:.2f}'
+            )
+
+        if len(topWallCrossings)>0:
+            flowFieldAxis.axvline(
+                topWallCrossings[0],
+                color='darkgreen',
+                linestyle='--',
+                linewidth=2,
+                label=f'Top wall (1): x/S = {topWallCrossings[0]:.2f}'
+            )
+
+        if len(topWallCrossings)>1:
+            flowFieldAxis.axvline(
+                topWallCrossings[1],
+                color='darkviolet',
+                linestyle='--',
+                linewidth=2,
+                label=f'Top wall (2): x/S = {topWallCrossings[1]:.2f}'
+            )
+
+        flowFieldAxis.legend(loc='upper right',fontsize=9)
+
+
+        # Step face
+        flowFieldAxis.plot([0,0],[0,1],'k-',linewidth=4)
+
+        flowFieldAxis.set_xlabel(r'$x/S$')
+        flowFieldAxis.set_ylabel(r'$y/S$')
+        flowFieldAxis.set_title('Backward-Facing Step\nVelocity Vectors and Streamlines')
+        flowFieldAxis.set_xlim(0,15)
+        flowFieldAxis.set_ylim(0,H/S)
+
+        # ------------------------------------------------------------
+        # 6. Add colour bars
+        # ------------------------------------------------------------
+
+        streamlineColorbar=figure.colorbar(
+            streamlinePlot.lines,
+            ax=flowFieldAxis,
+            fraction=0.046,
+            pad=0.04
+        )
+        streamlineColorbar.set_label(r'Streamline colour: $|\mathbf{V}|/U_0$')
+
+        vectorColorbar=figure.colorbar(
+            quiverPlot,
+            ax=flowFieldAxis,
+            fraction=0.046,
+            pad=0.12
+        )
+        vectorColorbar.set_label(r'Vector colour: $|\mathbf{V}|/U_0$')
+
+        figure.subplots_adjust(
+            left=0.07,
+            right=0.95,
+            top=0.88,
+            bottom=0.12,
+            wspace=0.42
+        )
 
     elif(caseName != 'bfs'):
         parameters={'U0':U0,'H':H,'nu':nu,'mu':mu,'dpdx':dpdx,'omega':omega,'Ubot':uSouth(tEnd),'Utop':uNorth(tEnd)}
@@ -641,7 +820,8 @@ def main(case):
         axError.tick_params(axis='both',which='major',length=5)
         fig.subplots_adjust(left=0.08,right=0.96,top=0.85,bottom=0.29,wspace=0.3)
     else:
-        fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
+        if(caseName != 'bfs'):
+            fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
 
     # ====================== ADDED CODE END ========================
 
