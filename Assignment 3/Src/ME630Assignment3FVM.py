@@ -148,7 +148,7 @@ def Solve5(aP,aE,aW,aN,aS,b,periodicX):
     return solution.reshape(nI,nJ)
 
 
-def main(case):
+def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     # ====================== 1. CASE SETUP (students edit here) ==============
     if(case== 1):
         caseName='channel'
@@ -243,7 +243,7 @@ def main(case):
         L=40*S
         Ny=33; Nx=320
         rho=1; U0=1
-        Re=50
+        Re=500
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -326,7 +326,8 @@ def main(case):
         if not isPer:
             u[0,:]=uInlet(yc,t)
 
-        # ================= 4. SIMPLE iterations within the time step ========
+        
+        # ================= 4. SIMPLE/SIMPEC/SIMPLER iterations within the time step ========
         for it in range(1,maxInner+1):
             uIt=u.copy(); vIt=v.copy()  # Previous iterate (for relaxation/check)
 
@@ -344,15 +345,35 @@ def main(case):
             Ds[:,0]=WallConductance(southBC,mu,dx,dy)  # y = 0 boundary
             Dn[:,-1]=WallConductance(northBC,mu,dx,dy) # y = H boundary
 
-            # First-order upwind neighbour coefficients
-            aE=De+np.maximum(-Fe,0)
-            aW=Dw+np.maximum(Fw,0)
-            aN=Dn+np.maximum(-Fn,0)
-            aS=Ds+np.maximum(Fs,0)
+            # Convection discretisation: UDS, CDS, or CDS deferred correction
+            if convectionScheme=='UDS' or convectionScheme=='CDS-DC':
+                # First-order upwind neighbour coefficients
+                aE=De+np.maximum(-Fe,0)
+                aW=Dw+np.maximum(Fw,0)
+                aN=Dn+np.maximum(-Fn,0)
+                aS=Ds+np.maximum(Fs,0)
+            elif convectionScheme=='CDS':
+                aE=De-Fe/2
+                aW=Dw+Fw/2
+                aN=Dn-Fn/2
+                aS=Ds+Fs/2
+            else:
+                raise ValueError(f'Unknown convectionScheme "{convectionScheme}"')
 
             # Central coefficient and source (implicit Euler: aP0 terms)
             aP=aE+aW+aN+aS+aP0
             b=(p[cW,:]-p[cE,:])*dy-dpdx*dx*dy+aP0*uOld[Iu,:]
+
+            if convectionScheme=='CDS-DC':
+                # Explicit CDS-UDS flux difference from previous inner iterate
+                uEastValues=uIt[IuE,:]
+                uWestValues=uIt[IuW,:]
+                uNorthValues=np.concatenate((uIt[Iu,1:Ny],np.full((nU,1),uN)),axis=1)
+                uSouthValues=np.concatenate((np.full((nU,1),uS),uIt[Iu,:Ny-1]),axis=1)
+                b-=0.5*(np.abs(Fe)*(uEastValues-uIt[Iu,:])
+                        -np.abs(Fw)*(uIt[Iu,:]-uWestValues)
+                        +np.abs(Fn)*(uNorthValues-uIt[Iu,:])
+                        -np.abs(Fs)*(uIt[Iu,:]-uSouthValues))
 
             # Boundary neighbours: known values moved to the source
             b[:,0]+=aS[:,0]*uS; aS[:,0]=0    # Wall at y = 0
@@ -365,11 +386,17 @@ def main(case):
             # Implicit under-relaxation (does not change the converged answer)
             aP=aP/alphaU
             b=b+(1-alphaU)*aP*u[Iu,:]
-            dU[Iu,:]=dy/aP     # SIMPLE: u' = dU*(p'_W - p'_E)
+            if algorithm=='SIMPLEC':
+                dU[Iu,:]=dy/(aP-aE-aW-aN-aS)
+            else:
+                dU[Iu,:]=dy/aP     # SIMPLE: u' = dU*(p'_W - p'_E)
             u[Iu,:]=Solve5(aP,aE,aW,aN,aS,b,isPer)
             if isPer:
                 u[Nx,:]=u[0,:] # Face Nx is face 0
                 dU[Nx,:]=dU[0,:]
+            if algorithm=='SIMPLER':
+                uMomentumAP=aP.copy(); uMomentumAE=aE.copy(); uMomentumAW=aW.copy()
+                uMomentumAN=aN.copy(); uMomentumAS=aS.copy(); uMomentumB=b.copy()
 
             # --------------- 4b. v-momentum ---------------------------------
             # Unknowns: v[:,1:Ny]; v = 0 on both y-boundaries (wall or slip)
@@ -384,12 +411,34 @@ def main(case):
                 Dw[0,:]=2*mu*dy/dx  # Inlet (v = 0) is dx/2 away
                 De[-1,:]=0         # Outlet: zero gradient
 
-            aE=De+np.maximum(-Fe,0)
-            aW=Dw+np.maximum(Fw,0)
-            aN=Dn+np.maximum(-Fn,0)
-            aS=Ds+np.maximum(Fs,0)
+            if convectionScheme=='UDS' or convectionScheme=='CDS-DC':
+                aE=De+np.maximum(-Fe,0)
+                aW=Dw+np.maximum(Fw,0)
+                aN=Dn+np.maximum(-Fn,0)
+                aS=Ds+np.maximum(Fs,0)
+            elif convectionScheme=='CDS':
+                aE=De-Fe/2
+                aW=Dw+Fw/2
+                aN=Dn-Fn/2
+                aS=Ds+Fs/2
+            else:
+                raise ValueError(f'Unknown convectionScheme "{convectionScheme}"')
+
             aP=aE+aW+aN+aS+aP0
             b=(p[:,:Ny-1]-p[:,1:Ny])*dx+aP0*vOld[:,1:Ny]
+
+            if convectionScheme=='CDS-DC':
+                # Explicit CDS-UDS flux difference from previous inner iterate
+                if isPer:
+                    vEastValues=np.roll(vIt[:,1:Ny],-1,axis=0)
+                    vWestValues=np.roll(vIt[:,1:Ny],1,axis=0)
+                else:
+                    vEastValues=np.concatenate((vIt[1:,1:Ny],vIt[-1:,1:Ny]),axis=0)
+                    vWestValues=np.concatenate((np.zeros((1,Ny-1)),vIt[:Nx-1,1:Ny]),axis=0)
+                b-=0.5*(np.abs(Fe)*(vEastValues-vIt[:,1:Ny])
+                        -np.abs(Fw)*(vIt[:,1:Ny]-vWestValues)
+                        +np.abs(Fn)*(vIt[:,2:Ny+1]-vIt[:,1:Ny])
+                        -np.abs(Fs)*(vIt[:,1:Ny]-vIt[:,:Ny-1]))
 
             if not isPer:
                 aW[0,:]=0   # Inlet: v = 0 (adds nothing)
@@ -398,12 +447,69 @@ def main(case):
 
             aP=aP/alphaU
             b=b+(1-alphaU)*aP*v[:,1:Ny]
-            dV[:,1:Ny]=dx/aP
+            if algorithm=='SIMPLEC':
+                dV[:,1:Ny]=dx/(aP-aE-aW-aN-aS)
+            else:
+                dV[:,1:Ny]=dx/aP
             v[:,1:Ny]=Solve5(aP,aE,aW,aN,aS,b,isPer)
+            if algorithm=='SIMPLER':
+                vMomentumAP=aP.copy(); vMomentumAE=aE.copy(); vMomentumAW=aW.copy()
+                vMomentumAN=aN.copy(); vMomentumAS=aS.copy(); vMomentumB=b.copy()
 
             # --------------- 4c. outlet (inlet-outlet cases only) -----------
+
             if not isPer:
                 u=ApplyOutlet(u,rho,dy)
+
+            # --------------- 4c(i). SIMPLER pressure equation ----------------
+            if algorithm=='SIMPLER':
+                # Form pseudo-velocities from the momentum equations without pressure
+                uHat=uIt.copy(); vHat=vIt.copy()
+                uNorthNeighbor=np.concatenate((uIt[Iu,1:Ny],np.zeros((len(Iu),1))),axis=1)
+                uSouthNeighbor=np.concatenate((np.zeros((len(Iu),1)),uIt[Iu,:Ny-1]),axis=1)
+                uHat[Iu,:]=(uMomentumAE*uIt[IuE,:]+uMomentumAW*uIt[IuW,:]
+                            +uMomentumAN*uNorthNeighbor+uMomentumAS*uSouthNeighbor
+                            +uMomentumB-(p[cW,:]-p[cE,:])*dy)/uMomentumAP
+
+                if isPer:
+                    uHat[Nx,:]=uHat[0,:]
+                    vEastNeighbor=np.roll(vIt[:,1:Ny],-1,axis=0)
+                    vWestNeighbor=np.roll(vIt[:,1:Ny],1,axis=0)
+                else:
+                    uHat=ApplyOutlet(uHat,rho,dy)
+                    vEastNeighbor=np.concatenate((vIt[1:,1:Ny],np.zeros((1,Ny-1))),axis=0)
+                    vWestNeighbor=np.concatenate((np.zeros((1,Ny-1)),vIt[:Nx-1,1:Ny]),axis=0)
+
+                vHat[:,1:Ny]=(vMomentumAE*vEastNeighbor+vMomentumAW*vWestNeighbor
+                              +vMomentumAN*vIt[:,2:Ny+1]+vMomentumAS*vIt[:,:Ny-1]
+                              +vMomentumB-(p[:,:Ny-1]-p[:,1:Ny])*dx)/vMomentumAP
+
+                # Solve the pressure equation using the pseudo-velocity fluxes
+                aE=rho*dU[1:Nx+1,:]*dy
+                aW=rho*dU[:Nx,:]*dy
+                aN=np.zeros((Nx,Ny)); aS=np.zeros((Nx,Ny))
+                aN[:,:Ny-1]=rho*dV[:,1:Ny]*dx
+                aS[:,1:Ny]=rho*dV[:,1:Ny]*dx
+                aP=aE+aW+aN+aS
+                b=rho*(uHat[:Nx,:]-uHat[1:Nx+1,:])*dy+rho*(vHat[:,:Ny]-vHat[:,1:Ny+1])*dx
+
+                iR=Nx-1; jR=0
+                aP[iR,jR]=1; aE[iR,jR]=0; aW[iR,jR]=0; aN[iR,jR]=0; aS[iR,jR]=0
+                b[iR,jR]=0
+                pressureBeforeSIMPLER=p.copy()
+                p=Solve5(aP,aE,aW,aN,aS,b,isPer)
+
+                # Re-solve the unchanged momentum systems using the new pressure
+                b=uMomentumB+((p[cW,:]-p[cE,:])
+                              -(pressureBeforeSIMPLER[cW,:]-pressureBeforeSIMPLER[cE,:]))*dy
+                u[Iu,:]=Solve5(uMomentumAP,uMomentumAE,uMomentumAW,uMomentumAN,uMomentumAS,b,isPer)
+                b=vMomentumB+((p[:,:Ny-1]-p[:,1:Ny])
+                              -(pressureBeforeSIMPLER[:,:Ny-1]-pressureBeforeSIMPLER[:,1:Ny]))*dx
+                v[:,1:Ny]=Solve5(vMomentumAP,vMomentumAE,vMomentumAW,vMomentumAN,vMomentumAS,b,isPer)
+                if isPer:
+                    u[Nx,:]=u[0,:]
+                else:
+                    u=ApplyOutlet(u,rho,dy)
 
             # --------------- 4d. pressure-correction equation ---------------
             # a_nb = rho*d*A on faces that are corrected; dU = 0 on inlet and
@@ -425,15 +531,26 @@ def main(case):
             pp=Solve5(aP,aE,aW,aN,aS,b,isPer)
 
             # --------------- 4e. correct p, u, v ----------------------------
-            p=p+alphaP*pp
+            if algorithm=='SIMPLE' or algorithm=='SIMPLEC':
+                p=p+alphaP*pp
+            elif algorithm=='SIMPLER':
+                pass
+            else:
+                raise ValueError(f'Unknown algorithm "{algorithm}"')
+
             u[Iu,:]+=dU[Iu,:]*(pp[cW,:]-pp[cE,:])
             v[:,1:Ny]+=dV[:,1:Ny]*(pp[:,:Ny-1]-pp[:,1:Ny])
             if isPer:
                 u[Nx,:]=u[0,:]
-            else:
+            elif algorithm!='SIMPLER':
                 u=ApplyOutlet(u,rho,dy)
 
             # --------------- 4f. convergence of this time step --------------
+            if algorithm=='SIMPLER':
+                # Check continuity after velocity correction
+                b=rho*(u[:Nx,:]-u[1:Nx+1,:])*dy+rho*(v[:,:Ny]-v[:,1:Ny+1])*dx
+                massRes=np.sum(np.abs(b))/fRef
+
             change=max(np.max(np.abs(u-uIt)),np.max(np.abs(v-vIt)))/U0
             if massRes<tolInner and change<tolInner:
                 break
@@ -445,9 +562,8 @@ def main(case):
             uDelta=np.interp(delta,yc,uMean)
             timeHistory.append(t)
             velocityHistory.append(uDelta/U0)
-
         if it==maxInner:
-            print(f'Warning: step {n}: SIMPLE not converged (mass {massRes:.1e}, change {change:.1e})')
+            print(f'Warning: step {n}: {algorithm} not converged (mass {massRes:.1e}, change {change:.1e})')
 
         # ================= 5. Store results, check steady state ==============
         for k in np.flatnonzero(nOut==n):
@@ -456,14 +572,15 @@ def main(case):
 
         stepChange=np.max(np.abs(u-uOld))/U0
         if n%max(1,round(nSteps/10))==0:
-            print(f't = {t:7.3f} s | SIMPLE iterations {it:3d} | max|u^(n+1)-u^n|/U0 = {stepChange:.2e}')
+            print(f't = {t:7.3f} s | {algorithm} iterations {it:3d} | max|u^(n+1)-u^n|/U0 = {stepChange:.2e}')
         if stopWhenSteady and stepChange<tolSteady:
             print(f'Steady state reached at t = {t:.2f} s (step {n})')
             uSnap[-1]=u.copy(); tSnap[-1]=t # Final state as last snapshot
             break
 
+
     nInner=nInner[:n]
-    print(f'SIMPLE iterations per time step: min {np.min(nInner)}, mean {np.mean(nInner):.1f}, max {np.max(nInner)}')
+    print(f'{algorithm} iterations per time step: min {np.min(nInner)}, mean {np.mean(nInner):.1f}, max {np.max(nInner)}')
 
     # ====================== 6. Comparison with exact solutions ==============
     # Wall speeds for the exact solutions: the plates are taken to move at
@@ -629,13 +746,13 @@ def main(case):
         # Mark wall separation and reattachment locations
         # ------------------------------------------------------------
 
-        if len(bottomWallCrossings)>0:
+        for i,location in enumerate(bottomWallCrossings):
             flowFieldAxis.axvline(
-                bottomWallCrossings[0],
-                color='black',
+                location,
+                color='darkorange',
                 linestyle='--',
                 linewidth=2,
-                label=f'Bottom wall: x/S = {bottomWallCrossings[0]:.2f}'
+                label=f'Bottom wall ({i+1}): x/S = {location:.2f}'
             )
 
         if len(topWallCrossings)>0:
@@ -969,13 +1086,13 @@ def main(case):
 
 
     # ---- Figure 3: SIMPLE iterations needed per time step ----
-    fig,ax=plt.subplots(num='SIMPLE iterations',figsize=(11,6.5))
+    fig,ax=plt.subplots(num='[{algorithm}] iterations',figsize=(11,6.5))
     ax.plot(np.arange(1,len(nInner)+1)*dt,nInner,'b-',linewidth=2,
-            label='SIMPLE iterations per time step')
+            label='{algorithm} iterations per time step')
     ax.grid(True,alpha=0.3)
     ax.set_xlabel('Simulation time, t [s]',labelpad=10)
-    ax.set_ylabel('Number of SIMPLE iterations',labelpad=10)
-    ax.set_title('SIMPLE Algorithm: Convergence Iteration History',pad=18)
+    ax.set_ylabel('Number of {algorithm} iterations',labelpad=10)
+    ax.set_title('{algorithm} Algorithm: Convergence Iteration History',pad=18)
     ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.19),frameon=False)
     fig.subplots_adjust(left=0.12,right=0.96,top=0.86,bottom=0.26)
     plt.show()
@@ -994,4 +1111,37 @@ if __name__=='__main__':
     case = int(input('Enter the case number : '))
     print('\n'+'='*90)
 
-    main(case)
+    print('Available algorithms:')
+    print('1.  SIMPLE   - Standard SIMPLE algorithm')
+    print('2.  SIMPLEC  - SIMPLEC algorithm')
+    print('3.  SIMPLER  - SIMPLER algorithm')
+    algoSelect = input('Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : ')
+    if algoSelect == '1':
+        algorithm = 'SIMPLE'
+    elif algoSelect == '2':
+        algorithm = 'SIMPLEC'
+    elif algoSelect == '3':
+        algorithm = 'SIMPLER'
+    else:
+        print('Invalid algorithm selection. Defaulting to SIMPLE.')
+        algorithm = 'SIMPLE'
+    print('\n'+'='*90)
+
+    print('Available convection schemes:')
+    print('1.  Upwind   - First-order upwind scheme')
+    print('2.  Central  - Second-order central differencing scheme')
+    print('3.  Central Difference - Deferred correction scheme')
+    schemeSelect = input('Enter the convection scheme (UDS, CDS, CDS-DC) : ')
+    if schemeSelect == '1':
+        convectionScheme = 'UDS'
+    elif schemeSelect == '2':
+        convectionScheme = 'CDS'
+    elif schemeSelect == '3':
+        convectionScheme = 'CDS-DC'
+    else:
+        print('Invalid convection scheme selection. Defaulting to Upwind.')
+        convectionScheme = 'UDS'
+
+    print('\n'+'='*90)
+
+    main(case, algorithm)
