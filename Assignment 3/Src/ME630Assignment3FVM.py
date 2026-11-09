@@ -1088,11 +1088,11 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     # ---- Figure 3: SIMPLE iterations needed per time step ----
     fig,ax=plt.subplots(num='[{algorithm}] iterations',figsize=(11,6.5))
     ax.plot(np.arange(1,len(nInner)+1)*dt,nInner,'b-',linewidth=2,
-            label='{algorithm} iterations per time step')
+            label=f'{algorithm} iterations per time step')
     ax.grid(True,alpha=0.3)
     ax.set_xlabel('Simulation time, t [s]',labelpad=10)
     ax.set_ylabel('Number of {algorithm} iterations',labelpad=10)
-    ax.set_title('{algorithm} Algorithm: Convergence Iteration History',pad=18)
+    ax.set_title(f'{algorithm} Algorithm: Convergence Iteration History',pad=18)
     ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.19),frameon=False)
     fig.subplots_adjust(left=0.12,right=0.96,top=0.86,bottom=0.26)
     plt.show()
