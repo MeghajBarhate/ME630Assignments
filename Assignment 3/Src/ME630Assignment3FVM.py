@@ -166,11 +166,11 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     omega=0.0
 
     if caseName=='channel':
-        """
-        A1.3 - Channel-flow spatial resolution study.
-        Change Nx and Ny independently to assess the sensitivity of the
-        entrance length and outlet velocity error to each grid spacing.
-        """
+        '''
+        =======
+        ANSWER A1.3 - Obtained by changing Nx, Ny and dt values here.
+        =======
+        '''
         # Developing channel flow, started from rest
         L=10; H=1                   # Domain length and height [m]
         Nx=100; Ny=40               # Number of pressure cells
@@ -357,10 +357,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             Ds[:,0]=WallConductance(southBC,mu,dx,dy)  # y = 0 boundary
             Dn[:,-1]=WallConductance(northBC,mu,dx,dy) # y = H boundary
 
-            """
-            D - Select the convection discretisation for the u-momentum equation.
-            UDS and CDS-DC retain upwind matrix coefficients; CDS uses central coefficients.
-            """
+            # Convection discretisation: UDS, CDS, or CDS deferred correction
             if convectionScheme=='UDS' or convectionScheme=='CDS-DC':
                 # First-order upwind neighbour coefficients
                 aE=De+np.maximum(-Fe,0)
@@ -380,10 +377,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             b=(p[cW,:]-p[cE,:])*dy-dpdx*dx*dy+aP0*uOld[Iu,:]
 
             if convectionScheme=='CDS-DC':
-                """
-                D2 - Apply deferred correction using the previous nonlinear iterate.
-                Add the difference between central and upwind convective fluxes to the source.
-                """
+                # Explicit CDS-UDS flux difference from previous inner iterate
                 uEastValues=uIt[IuE,:]
                 uWestValues=uIt[IuW,:]
                 uNorthValues=np.concatenate((uIt[Iu,1:Ny],np.full((nU,1),uN)),axis=1)
@@ -446,10 +440,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             b=(p[:,:Ny-1]-p[:,1:Ny])*dx+aP0*vOld[:,1:Ny]
 
             if convectionScheme=='CDS-DC':
-                """
-                D2 - Apply deferred correction using the previous nonlinear iterate.
-                Add the difference between central and upwind convective fluxes to the source.
-                """
+                # Explicit CDS-UDS flux difference from previous inner iterate
                 if isPer:
                     vEastValues=np.roll(vIt[:,1:Ny],-1,axis=0)
                     vWestValues=np.roll(vIt[:,1:Ny],1,axis=0)
@@ -482,15 +473,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             if not isPer:
                 u=ApplyOutlet(u,rho,dy)
 
-            """
-            C2 - Assemble and solve the additional SIMPLER pressure equation.
-            Use pseudo-velocities to estimate the pressure field before correcting momentum.
-            """
+            # --------------- 4c(i). SIMPLER pressure equation ----------------
             if algorithm=='SIMPLER':
-                """
-                C2 - Form the SIMPLER pseudo-velocity fields by removing the current
-                pressure-gradient contribution from the discrete momentum relations.
-                """
+                # Form pseudo-velocities from the momentum equations without pressure
                 uHat=uIt.copy(); vHat=vIt.copy()
                 uNorthNeighbor=np.concatenate((uIt[Iu,1:Ny],np.zeros((len(Iu),1))),axis=1)
                 uSouthNeighbor=np.concatenate((np.zeros((len(Iu),1)),uIt[Iu,:Ny-1]),axis=1)
@@ -511,10 +496,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                               +vMomentumAN*vIt[:,2:Ny+1]+vMomentumAS*vIt[:,:Ny-1]
                               +vMomentumB-(p[:,:Ny-1]-p[:,1:Ny])*dx)/vMomentumAP
 
-                """
-                C2 - Build the pressure equation from the divergence of the pseudo-velocity
-                fluxes, fixing one reference pressure to remove the constant nullspace.
-                """
+                # Solve the pressure equation using the pseudo-velocity fluxes
                 aE=rho*dU[1:Nx+1,:]*dy
                 aW=rho*dU[:Nx,:]*dy
                 aN=np.zeros((Nx,Ny)); aS=np.zeros((Nx,Ny))
@@ -529,10 +511,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 pressureBeforeSIMPLER=p.copy()
                 p=Solve5(aP,aE,aW,aN,aS,b,isPer)
 
-                """
-                C2 - Re-solve the stored momentum systems with the updated pressure field.
-                The coefficient matrices are retained while pressure-dependent sources change.
-                """
+                # Re-solve the unchanged momentum systems using the new pressure
                 b=uMomentumB+((p[cW,:]-p[cE,:])
                               -(pressureBeforeSIMPLER[cW,:]-pressureBeforeSIMPLER[cE,:]))*dy
                 u[Iu,:]=Solve5(uMomentumAP,uMomentumAE,uMomentumAW,uMomentumAN,uMomentumAS,b,isPer)
@@ -580,10 +559,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
             # --------------- 4f. convergence of this time step --------------
             if algorithm=='SIMPLER':
-                """
-                C2 - Check the corrected velocity field against discrete continuity
-                before deciding whether the SIMPLER iteration has converged.
-                """
+                # Check continuity after velocity correction
                 b=rho*(u[:Nx,:]-u[1:Nx+1,:])*dy+rho*(v[:,:Ny]-v[:,1:Ny+1])*dx
                 massRes=np.sum(np.abs(b))/fRef
 
@@ -592,10 +568,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 break
 
         nInner[n-1]=it
-        """
-        A3.4 - Sample the streamwise velocity at y=delta during the last period
-        for the subsequent sinusoidal least-squares amplitude and phase fit.
-        """
+        # Store velocity at y=delta over the last period
         if caseName=='stokes2' and t>=tEnd-T-1e-10:
             uMean=np.mean(u[:Nx,:],axis=0)
             uDelta=np.interp(delta,yc,uMean)
@@ -619,7 +592,8 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
 
     nInner=nInner[:n]
-    print(f'{algorithm} iterations per time step: min {np.min(nInner)}, mean {np.mean(nInner):.1f}, max {np.max(nInner)}')
+    averageIterations=np.mean(nInner)
+    print(f'{algorithm} iterations per time step: min {np.min(nInner)}, average {averageIterations:.2f}, max {np.max(nInner)}')
 
     # ====================== 6. Comparison with exact solutions ==============
     # Wall speeds for the exact solutions: the plates are taken to move at
@@ -632,10 +606,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         velocityMagnitude=np.sqrt(normalisedUVelocity**2+normalisedVVelocity**2)
         pressureGridXCoordinates=xc/S
         pressureGridYCoordinates=yc/S
-        """
-        B2 - Locate recirculation boundaries from changes in the near-wall
-        streamwise velocity, interpolating between adjacent cell-centre stations.
-        """
+        # ============================================================
+        # 4a. Locate wall separation and reattachment points
+        # ============================================================
 
         def findVelocitySignChanges(velocityProfile,xCoordinates):
             crossingLocations=[]
@@ -664,10 +637,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         print(f'Bottom wall zero crossings (x/S): {bottomWallCrossings}')
         print(f'Top wall zero crossings (x/S): {topWallCrossings}')
 
-        """
-        B - Interpolate staggered velocity components onto pressure-cell centres
-        so that both components can be used consistently in post-processing.
-        """
+        # ============================================================
+        # 1. Compute velocity field at pressure cell centres
+        # ============================================================
 
         cellCenteredUVelocity=0.5*(u[:-1,:]+u[1:,:])
         cellCenteredVVelocity=0.5*(v[:,:-1]+v[:,1:])
@@ -677,18 +649,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
         velocityMagnitude=np.sqrt(normalisedUVelocity**2+normalisedVVelocity**2)
 
-        """
-        B - Nondimensionalize cell-centre positions and velocity fields by
-        step height and reference inlet speed for visual comparison.
-        """
+        # ============================================================
+        # 2. Prepare pressure grid coordinates and velocity fields
+        # ============================================================
 
         pressureGridXCoordinates=xc/S
         pressureGridYCoordinates=yc/S
 
-        """
-        B - Transpose cell-centred arrays into the row-column ordering expected
-        by Matplotlib streamplot and quiver functions.
-        """
+        # Matplotlib expects arrays of shape (Ny,Nx)
         streamplotUVelocity=normalisedUVelocity.T
         streamplotVVelocity=normalisedVVelocity.T
         streamplotVelocityMagnitude=velocityMagnitude.T
@@ -698,10 +666,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             pressureGridYCoordinates
         )
 
-        """
-        B - Extract streamwise velocity profiles at selected downstream
-        locations to examine flow development and the recirculation region.
-        """
+        # ============================================================
+        # 3. Prepare downstream velocity profiles
+        # ============================================================
 
         downstreamStations=[1,2,4,6,8,10,15,20,30,40]
         downstreamProfileData=[]
@@ -713,10 +680,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 normalisedUVelocity[nearestStreamwiseIndex,:]
             ))
 
-        """
-        B - Subsample the computed velocity field for legible quiver arrows
-        without changing the underlying numerical solution.
-        """
+        # ============================================================
+        # 4. Prepare velocity vector sampling
+        # ============================================================
 
         vectorSamplingStepX=5
         vectorSamplingStepY=2
@@ -728,17 +694,15 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         quiverVVelocity=streamplotVVelocity[::vectorSamplingStepY,::vectorSamplingStepX]
         quiverVelocityMagnitude=streamplotVelocityMagnitude[::vectorSamplingStepY,::vectorSamplingStepX]
 
-        """
-        B - Display downstream velocity profiles alongside the complete
-        velocity-vector and streamline visualization of the step flow.
-        """
+        # ============================================================
+        # 5. Plot results
+        # ============================================================
 
         figure,axes=plt.subplots(1,2,figsize=(17,7))
 
-        """
-        B - Left panel: compare nondimensional velocity profiles at the
-        selected downstream stations.
-        """
+        # ------------------------------------------------------------
+        # Left subplot: downstream velocity profiles
+        # ------------------------------------------------------------
 
         profileAxis=axes[0]
 
@@ -757,16 +721,13 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         profileAxis.grid(True,alpha=0.3)
         profileAxis.legend(loc='upper right',fontsize=9)
 
-        """
-        B - Right panel: show streamlines and velocity vectors together
-        to visualize the separated flow around the step.
-        """
+        # ------------------------------------------------------------
+        # Right subplot: velocity vectors and streamlines
+        # ------------------------------------------------------------
 
         flowFieldAxis=axes[1]
 
-        """
-        B - Colour streamlines by normalized local velocity magnitude.
-        """
+        # Streamlines coloured using plasma
         streamlinePlot=flowFieldAxis.streamplot(
             pressureGridXCoordinates,
             pressureGridYCoordinates,
@@ -779,9 +740,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             arrowsize=1.0
         )
 
-        """
-        B - Colour sampled velocity vectors by normalized local speed.
-        """
+        # Velocity vectors coloured using winter
         quiverPlot=flowFieldAxis.quiver(
             quiverXCoordinates,
             quiverYCoordinates,
@@ -796,10 +755,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         )
 
 
-        """
-        B2 - Mark the near-wall zero-crossing locations associated with
-        primary reattachment and any upper-wall recirculation bubble.
-        """
+        # ------------------------------------------------------------
+        # Mark wall separation and reattachment locations
+        # ------------------------------------------------------------
 
         for i,location in enumerate(bottomWallCrossings):
             flowFieldAxis.axvline(
@@ -831,9 +789,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         flowFieldAxis.legend(loc='upper right',fontsize=9)
 
 
-        """
-        B - Mark the step-face location in the flow visualization.
-        """
+        # Step face
         flowFieldAxis.plot([0,0],[0,1],'k-',linewidth=4)
 
         flowFieldAxis.set_xlabel(r'$x/S$')
@@ -842,9 +798,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         flowFieldAxis.set_xlim(0,15)
         flowFieldAxis.set_ylim(0,H/S)
 
-        """
-        B - Add separate magnitude colour bars for streamlines and vectors.
-        """
+        # ------------------------------------------------------------
+        # 6. Add colour bars
+        # ------------------------------------------------------------
 
         streamlineColorbar=figure.colorbar(
             streamlinePlot.lines,
@@ -886,10 +842,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             print('(channel: compared with the fully developed Poiseuille profile at the outlet)')
 
 
-        """
-        A3.4 - Fit the final-period velocity at y=delta to cosine, sine and
-        constant terms, then compare the amplitude and phase with exact values.
-        """
+        # ---- Stokes second problem: amplitude and phase ----
         if caseName=='stokes2':
             timeHistory=np.array(timeHistory)
             velocityHistory=np.array(velocityHistory)
@@ -944,15 +897,13 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
     # ---- Figure 1: velocity profiles vs exact solution ----
 
-    """
-    A2.1 - Create a second panel for the Stokes I maximum-error history.
-    Keep the usual numerical-versus-analytical profile panel alongside it.
-    """
+    # ====================== ADDED CODE START ======================
     if caseName=='stokes1':
         fig,(ax,axError)=plt.subplots(1,2,num='Velocity profiles',figsize=(15,7))
         maximumAbsoluteError=np.zeros(len(keep))
     elif (caseName != 'bfs'):
         fig,ax=plt.subplots(num='Velocity profiles',figsize=(11,8))
+    # ====================== ADDED CODE END ========================
 
     if(caseName != 'bfs'):
         for k in keep:
@@ -966,13 +917,11 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 label=f't = {tSnap[k]:g} s'
             ax.plot(uNum[::step]/U0,yc[::step]/H,'o',color=colors[k],markersize=5,label=label)
 
-            """
-            A2.1 - Measure the maximum absolute velocity-profile discrepancy
-            for the current stored Stokes I time.
-            """
+            # ====================== ADDED CODE START ======================
             if caseName=='stokes1':
                 analyticalVelocity=ExactProfile(caseName,yc,tSnap[k],parameters)
                 maximumAbsoluteError[np.where(keep==k)[0][0]]=np.max(np.abs(uNum-analyticalVelocity))/U0
+            # ====================== ADDED CODE END ========================
             ax.set_xlabel(r'Normalised velocity, $u/U_0$',labelpad=10)
             ax.set_ylabel(r'Normalised height, $y/H$',labelpad=10)
             if caseName=='channel':
@@ -991,10 +940,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.16),ncol=min(4,len(keep)),
                         frameon=False,title='Time / Phase',title_fontsize=12)
 
-    """
-    A2.1 - Plot the maximum velocity error over the saved times
-    next to the Stokes I profile comparison.
-    """
+    # ====================== ADDED CODE START ======================
     if caseName=='stokes1':
         axError.plot(tSnap[keep],maximumAbsoluteError,'o-',color='tab:red',linewidth=2,markersize=6)
         axError.set_xlabel('Time [s]',labelpad=10)
@@ -1007,11 +953,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         if(caseName != 'bfs'):
             fig.subplots_adjust(left=0.12,right=0.96,top=0.85,bottom=0.29)
 
+    # ====================== ADDED CODE END ========================
 
-    """
-    A2.2 - Plot velocity against eta=y/(2*sqrt(nu*t)) for all saved
-    times and compare the collapse with the exact complementary error function.
-    """
+    # ====================== Stokes 1: Similarity Solution ======================
     if caseName=='stokes1':
         fig,ax=plt.subplots(num='Stokes 1 Similarity Solution',figsize=(10,7))
 
@@ -1036,15 +980,10 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         ax.legend(loc='upper right',frameon=False)
 
         fig.tight_layout()
-    """
-    End of the A2.2 Stokes I similarity-profile visualization.
-    """
+    # ====================== End Similarity Solution ===========================
 
 
-    """
-    A2.3 - Compute the numerical shear from the near-wall velocity
-    gradient and compare its magnitude with the exact t^(-1/2) law.
-    """
+    # ====================== Stokes 1: Wall Shear Stress ======================
     if caseName=='stokes1':
         timeValues=tSnap[keep]
         numericalShear=np.zeros(len(keep))
@@ -1068,9 +1007,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         ax.legend(loc='upper right',frameon=False)
 
         fig.tight_layout()
-    """
-    End of the A2.3 wall-shear comparison.
-    """
+    # ====================== End Wall Shear Stress ===========================
 
 
     # ---- Figure 2 (channel only): flow field and centreline development ----
@@ -1100,37 +1037,25 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         axes[1].legend(loc='upper center',bbox_to_anchor=(0.5,-0.3),
                        ncol=4,frameon=False)
         fig.subplots_adjust(left=0.12,right=0.91,top=0.88,bottom=0.2,hspace=0.64)
-        """
-        A1.2 - Hydrodynamic entrance-length comparison.
-        Locate the first station where the centreline speed reaches 99% of
-        the fully developed maximum and compare with 0.05*Re*H.
-        """
-        """
-        A1.2 - Form the channel centreline speed from the two central
-        velocity rows of the final stored flow field.
-        """
+        '''
+        =======
+        ANSWER A1.2
+        =======
+        '''
+        # Centreline velocity from the final solution
         centrelineVelocity=0.5*(uLast[:,Ny//2-1]+uLast[:,Ny//2])
         targetVelocity=0.99*1.5*U0
-        """
-        A1.2 - Identify the first downstream location where the centreline
-        velocity reaches 99% of its fully developed maximum.
-        """
+        # First x-location where centreline velocity reaches 99%
         indices=np.where(centrelineVelocity>=targetVelocity)[0]
         if len(indices)>0:
             i99=indices[0]
             entryLengthNumerical=xu[i99]
             axes[0].axvline(entryLengthNumerical,color='purple',linestyle='--',linewidth=2.5,label=f'Numerical: {entryLengthNumerical:.3f} m')
-        """
-        A1.2 - Display the correlation-based hydrodynamic entrance length.
-        """
+        # Analytical entrance length
         axes[0].axvline(entryLengthAnalytical,color='red',linestyle='--',linewidth=2.5,label=f'Analytical: {entryLengthAnalytical:.3f} m')
-        """
-        A1.2 - Label the numerical and correlation-based entrance lengths.
-        """
+        # Entrance length legend
         axes[0].legend(loc='upper right',fontsize=10,frameon=True,facecolor='white',framealpha=0.9)
-        """
-        A1.2 - Print the two entrance-length estimates and their difference.
-        """
+        # Print entrance lengths
         print('\nHydrodynamic Entrance Lengths')
         print(f'Analytical : {entryLengthAnalytical:.6f} m')
         if entryLengthNumerical is not None:
@@ -1138,15 +1063,15 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             print(f'Difference : {abs(entryLengthNumerical-entryLengthAnalytical):.6f} m')
         else:
             print('Numerical  : 99% threshold not reached within the domain')
-        """
-        End of the A1.2 entrance-length calculation.
-        """
+        '''
+        =======
+        '''
 
-    """
-    A3.3 - Stokes II wall shear and plate-velocity phase comparison.
-    Compare the normalized oscillating-plate velocity with the analytical
-    wall-shear signal over the final period to illustrate their phase shift.
-    """
+    '''
+    =======
+    ANSWER A3.3
+    =======
+    '''
     if caseName=='stokes2':
         k=np.sqrt(omega/(2*nu))
         time=np.linspace(tEnd-T,tEnd,500)
@@ -1174,12 +1099,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
 
     # ---- Figure 3: SIMPLE iterations needed per time step ----
-    fig,ax=plt.subplots(num='[{algorithm}] iterations',figsize=(11,6.5))
+    fig,ax=plt.subplots(num=f'{algorithm} iterations',figsize=(11,6.5))
     ax.plot(np.arange(1,len(nInner)+1)*dt,nInner,'b-',linewidth=2,
             label=f'{algorithm} iterations per time step')
+    ax.axhline(averageIterations,color='red',linestyle=':',linewidth=2,
+               label=f'Average = {averageIterations:.2f} iterations')
     ax.grid(True,alpha=0.3)
     ax.set_xlabel('Simulation time, t [s]',labelpad=10)
-    ax.set_ylabel('Number of {algorithm} iterations',labelpad=10)
+    ax.set_ylabel(f'Number of {algorithm} iterations',labelpad=10)
     ax.set_title(f'{algorithm} Algorithm: Convergence Iteration History',pad=18)
     ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.19),frameon=False)
     fig.subplots_adjust(left=0.12,right=0.96,top=0.86,bottom=0.26)
