@@ -785,14 +785,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
         flowFieldAxis=axes[0]
 
-        # Streamlines coloured using plasma
+        # Streamlines coloured using black
         streamlinePlot=flowFieldAxis.streamplot(
             pressureGridXCoordinates,
             pressureGridYCoordinates,
             streamplotUVelocity,
             streamplotVVelocity,
             color=streamplotVelocityMagnitude,
-            cmap='plasma',
+            cmap='black',
             density=2.0,
             linewidth=1.2,
             arrowsize=1.0
