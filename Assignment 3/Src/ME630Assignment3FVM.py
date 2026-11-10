@@ -54,6 +54,7 @@
 import os
 import sys
 import traceback
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix
@@ -319,7 +320,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
     # Keep separate results for different algorithms, schemes and relaxation.
     caseFolderName+=f'_{algorithm}_{convectionScheme}_aU{alphaU:g}'
-    outputFolder=os.path.join(os.path.dirname(os.path.abspath(__file__)),caseFolderName)
+    outputFolder=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'Results',caseFolderName)
     os.makedirs(outputFolder,exist_ok=True)
     StartConsoleLog(outputFolder)
     print(f'Output folder: {outputFolder}')
@@ -376,6 +377,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     print('(implicit scheme: no stability limit, but accuracy needs small dt)')
 
     # ====================== 3. Time loop ====================================
+    algorithmStartTime=time.process_time()
     for n in range(1,nSteps+1):
         t=n*dt                       # New time level t^(n+1)
         uOld=u.copy(); vOld=v.copy() # Solution at the old time level t^n
@@ -637,6 +639,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             uSnap[-1]=u.copy(); tSnap[-1]=t # Final state as last snapshot
             break
 
+
+    algorithmCPUTime=time.process_time()-algorithmStartTime
+    print(f'{algorithm} total CPU time: {algorithmCPUTime:.3f} s')
 
     nInner=nInner[:n]
     averageIterations=np.mean(nInner)
