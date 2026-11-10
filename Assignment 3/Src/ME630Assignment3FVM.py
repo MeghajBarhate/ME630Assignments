@@ -51,11 +51,54 @@
 #  u(Nx,:) = u(0,:) at all times.
 # =========================================================================
 
+import os
+import sys
+import traceback
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.special import erfc
+
+
+class ConsoleLogger:
+    # Display messages in the terminal and save them when the folder is known.
+    def __init__(self,terminal):
+        self.terminal=terminal
+        self.pending=[]
+        self.logFile=None
+
+    def write(self,message):
+        self.terminal.write(message)
+        if self.logFile is None:
+            self.pending.append(message)
+        else:
+            self.logFile.write(message)
+            self.logFile.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        if self.logFile is not None:
+            self.logFile.flush()
+
+    def close(self):
+        if self.logFile is not None:
+            self.logFile.close()
+            self.logFile=None
+
+
+def StartConsoleLog(outputFolder):
+    # Save earlier menu output too, then log all further console prints.
+    if not isinstance(sys.stdout,ConsoleLogger):
+        sys.stdout=ConsoleLogger(sys.stdout)
+    if not isinstance(sys.stderr,ConsoleLogger):
+        sys.stderr=ConsoleLogger(sys.stderr)
+    logFile=open(os.path.join(outputFolder,'console_output.txt'),'w',encoding='utf-8')
+    for logger in (sys.stdout,sys.stderr):
+        logFile.write(''.join(logger.pending))
+        logger.pending.clear()
+        logger.logFile=logFile
+    logFile.flush()
 
 
 def WallConductance(bcType,mu,dx,dy):
@@ -181,16 +224,18 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: 0     # Fixed lower wall
         northBC='wall'; uNorth=lambda t: 0     # Fixed upper wall
         dpdx=0                      # Not used with inlet-outlet
-        """
-        A1.4 - Channel-flow time-step study.
-        Set dt to the required values and compare the final steady profile
-        and the simulated time taken to reach steady state.
-        """
+        '''
+        =======
+        ANSWER A1.4
+        =====
+        '''
         dt= 0.02; tEnd=60            # Time step and end time [s]
         tOut=np.array([1,2,5,10,20,60],dtype=float)
         entryLengthAnalytical=0.05*(rho*U0*H/mu)*H
         entryLengthNumerical = None
         stopWhenSteady=True
+        Re=rho*U0*H/mu
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
 
     elif caseName=='couette':
         # Start-up of Couette flow
@@ -207,6 +252,8 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         dt=0.02; tEnd=10
         tOut=np.array([0.1,0.5,1,2,5,10],dtype=float)
         stopWhenSteady=False
+        Re=rho*U0*H/mu
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
 
     elif caseName=='stokes1':
         # Stokes first problem (Rayleigh problem)
@@ -221,6 +268,8 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         dt=0.0005; tEnd=1
         tOut=np.array([0.05,0.1,0.25,0.5,1],dtype=float)
         stopWhenSteady=False
+        Re=rho*U0*H/mu
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
 
     elif caseName=='stokes2':
         # Stokes second problem (oscillating plate)
@@ -236,12 +285,11 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         dt=T/400; tEnd=4*T          # Four periods; start-up transient decays fast
         tOut=tEnd-T+np.arange(8)*T/8  # Eight phases of the last period
         stopWhenSteady=False
-    
+        Re=rho*U0*H/mu
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
+
     elif caseName=='bfs':
-        """
-        B1 - Backward-facing-step case based on the Armaly geometry.
-        Set the nondimensional channel dimensions, Reynolds number and start-up conditions.
-        """
+        # Backward-facing step (Geometry from Armaly)
         S=1; h=17/16; H=S+h
         L=40*S
         Ny=33; Nx=320
@@ -249,10 +297,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         Re=500
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
-        """
-        B1 - Apply the fully developed parabolic inlet profile above the step lip.
-        The imposed velocity is zero in the portion below the lip.
-        """
+        # Parabolic inlet profile above the step
         uInlet=lambda y,t: np.where(y>S,6*U0*((y-S)/h)*(1-(y-S)/h),0.0)
         southBC='wall'; uSouth=lambda t: 0
         northBC='wall'; uNorth=lambda t: 0
@@ -260,7 +305,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         dt=0.05; tEnd=100
         tOut=np.array([1,5,10,20,50,100],dtype=float)
         stopWhenSteady=True
-
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
 
     else:
         raise ValueError(f'Unknown caseName "{caseName}"')
@@ -271,6 +316,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     maxInner=200                   # Max SIMPLE iterations per time step
     tolInner=1e-6                  # Convergence of each time step
     tolSteady=1e-7                 # |u^(n+1)-u^n|/U0 below this -> steady
+
+    # Keep separate results for different algorithms, schemes and relaxation.
+    caseFolderName+=f'_{algorithm}_{convectionScheme}_aU{alphaU:g}'
+    outputFolder=os.path.join(os.path.dirname(os.path.abspath(__file__)),caseFolderName)
+    os.makedirs(outputFolder,exist_ok=True)
+    StartConsoleLog(outputFolder)
+    print(f'Output folder: {outputFolder}')
+    print(f'Algorithm: {algorithm} | Scheme: {convectionScheme} | Re: {Re:g} | alphaU: {alphaU:g} | alphaP: {alphaP:g}')
 
     # ====================== 2. Grid and initial fields ======================
     dx=L/Nx; dy=H/Ny
@@ -312,10 +365,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     tSnap=np.full(len(tOut),np.nan)
     nInner=np.zeros(nSteps,dtype=int)
     
-    """
-    A3.4 - Record the Stokes II velocity at the viscous penetration depth.
-    The last-period signal is used to measure its amplitude and phase lag.
-    """
+    # Velocity history at the penetration depth
     if caseName=='stokes2':
         delta=np.sqrt(2*nu/omega)
         timeHistory=[]
@@ -336,10 +386,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             u[0,:]=uInlet(yc,t)
 
         
-        """
-        C - Iterate the selected pressure-velocity coupling algorithm at each time level.
-        The same momentum equations are used for SIMPLE, SIMPLEC and SIMPLER.
-        """
+        # ================= 4. SIMPLE/SIMPEC/SIMPLER iterations within the time step ========
         for it in range(1,maxInner+1):
             uIt=u.copy(); vIt=v.copy()  # Previous iterate (for relaxation/check)
 
@@ -595,6 +642,12 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     averageIterations=np.mean(nInner)
     print(f'{algorithm} iterations per time step: min {np.min(nInner)}, average {averageIterations:.2f}, max {np.max(nInner)}')
 
+    # Save iteration history for plotting in LabPlot or other software.
+    iterationData=np.column_stack((np.arange(1,len(nInner)+1),np.arange(1,len(nInner)+1)*dt,nInner))
+    iterationFile=os.path.join(outputFolder,'iteration_history.csv')
+    np.savetxt(iterationFile,iterationData,delimiter=',',header='TimeStep,Time_s,Iterations',comments='',fmt=['%d','%.12g','%d'])
+    print(f'Saved iteration history: {iterationFile}')
+
     # ====================== 6. Comparison with exact solutions ==============
     # Wall speeds for the exact solutions: the plates are taken to move at
     # constant speed for t > 0 (true for the couette and stokes1 cases)
@@ -698,7 +751,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # 5. Plot results
         # ============================================================
 
-        figure,axes=plt.subplots(1,2,figsize=(17,7))
+        figure,axes=plt.subplots(1,2,num='Backward Facing Step',figsize=(17,7))
 
         # ------------------------------------------------------------
         # Left subplot: downstream velocity profiles
@@ -1080,7 +1133,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         plateVelocity=np.cos(phase)
         wallShear=-np.cos(phase+np.pi/4)
 
-        fig,ax=plt.subplots(figsize=(11,6))
+        fig,ax=plt.subplots(num='Stokes 2 Wall Shear Stress',figsize=(11,6))
 
         ax.plot(time,plateVelocity,'b-',linewidth=2,
                 label=r'Plate velocity, $U_w/U_0$')
@@ -1095,7 +1148,6 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         ax.legend()
 
         fig.tight_layout()
-        plt.show()
 
 
     # ---- Figure 3: SIMPLE iterations needed per time step ----
@@ -1110,9 +1162,23 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     ax.set_title(f'{algorithm} Algorithm: Convergence Iteration History',pad=18)
     ax.legend(loc='upper center',bbox_to_anchor=(0.5,-0.19),frameon=False)
     fig.subplots_adjust(left=0.12,right=0.96,top=0.86,bottom=0.26)
+
+    # Save all figures before showing them (including case-specific plots).
+    for figureNumber in plt.get_fignums():
+        currentFigure=plt.figure(figureNumber)
+        figureName=currentFigure.get_label() or 'Flow Field'
+        figureName=figureName.replace(' ','_')
+        figurePath=os.path.join(outputFolder,f'{figureNumber:02d}_{figureName}.png')
+        currentFigure.savefig(figurePath,dpi=200,bbox_inches='tight')
+        print(f'Saved figure: {figurePath}')
+
     plt.show()
 
 if __name__=='__main__':
+    originalStdout=sys.stdout
+    originalStderr=sys.stderr
+    sys.stdout=ConsoleLogger(originalStdout)
+    sys.stderr=ConsoleLogger(originalStderr)
     print('='*90, '\n')
     print('ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047')
     print('\n'+'='*90)
@@ -1159,4 +1225,14 @@ if __name__=='__main__':
 
     print('\n'+'='*90)
 
-    main(case, algorithm)
+    try:
+        main(case, algorithm, convectionScheme)
+    except Exception:
+        traceback.print_exc()
+        raise SystemExit(1)
+    finally:
+        consoleLogger=sys.stdout
+        sys.stdout=originalStdout
+        sys.stderr=originalStderr
+        if isinstance(consoleLogger,ConsoleLogger):
+            consoleLogger.close()
