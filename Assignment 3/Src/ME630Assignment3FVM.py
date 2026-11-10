@@ -54,7 +54,7 @@
 import os
 import sys
 import traceback
-import time
+import time as clock
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.sparse import coo_matrix
@@ -377,7 +377,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     print('(implicit scheme: no stability limit, but accuracy needs small dt)')
 
     # ====================== 3. Time loop ====================================
-    algorithmStartTime=time.process_time()
+    algorithmStartTime= clock.process_time()
     for n in range(1,nSteps+1):
         t=n*dt                       # New time level t^(n+1)
         uOld=u.copy(); vOld=v.copy() # Solution at the old time level t^n
@@ -640,7 +640,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             break
 
 
-    algorithmCPUTime=time.process_time()-algorithmStartTime
+    algorithmCPUTime= clock.process_time()-algorithmStartTime
     print(f'{algorithm} total CPU time: {algorithmCPUTime:.3f} s')
 
     nInner=nInner[:n]
