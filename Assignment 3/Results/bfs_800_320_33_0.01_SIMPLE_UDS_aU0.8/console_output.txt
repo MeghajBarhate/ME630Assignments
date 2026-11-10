@@ -38,3 +38,12 @@ t =  60.000 s | SIMPLE iterations   7 | max|u^(n+1)-u^n|/U0 = 2.07e-04
 t =  70.000 s | SIMPLE iterations   7 | max|u^(n+1)-u^n|/U0 = 1.76e-04
 t =  80.000 s | SIMPLE iterations   6 | max|u^(n+1)-u^n|/U0 = 1.54e-04
 t =  90.000 s | SIMPLE iterations   6 | max|u^(n+1)-u^n|/U0 = 1.32e-04
+t = 100.000 s | SIMPLE iterations   5 | max|u^(n+1)-u^n|/U0 = 1.24e-04
+SIMPLE total CPU time: 3752.602 s
+SIMPLE iterations per time step: min 5, average 8.74, max 170
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.01_SIMPLE_UDS_aU0.8/iteration_history.csv
+Bottom wall zero crossings (x/S): [np.float64(8.294732623550324)]
+Top wall zero crossings (x/S): [np.float64(6.453210268686767), np.float64(13.864391629214055)]
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.01_SIMPLE_UDS_aU0.8/01_Backward_Facing_Step.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.01_SIMPLE_UDS_aU0.8/02_SIMPLE_iterations.png

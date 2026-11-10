@@ -295,7 +295,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         L=40*S
         Ny=33; Nx=320
         rho=1; U0=1
-        Re=800
+        Re=400
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -759,13 +759,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # 5. Plot results
         # ============================================================
 
-        figure,axes=plt.subplots(2,1,num='Backward Facing Step',figsize=(16,10))
+        figure,axes=plt.subplots(3,1,num='Backward Facing Step',figsize=(16,15),
+                                 gridspec_kw={'height_ratios':[1,1,1.25]})
         
         # ------------------------------------------------------------
-        # Left subplot: downstream velocity profiles
+        # Bottom subplot: downstream velocity profiles
         # ------------------------------------------------------------
 
-        profileAxis=axes[1]
+        profileAxis=axes[2]
 
         for station,velocityProfile in downstreamProfileData:
             profileAxis.plot(
@@ -783,7 +784,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         profileAxis.legend(loc='upper right',fontsize=9)
 
         # ------------------------------------------------------------
-        # Right subplot: velocity vectors and streamlines
+        # Top subplot: velocity vectors and streamlines
         # ------------------------------------------------------------
 
         flowFieldAxis=axes[0]
@@ -862,6 +863,36 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         flowFieldAxis.set_ylim(0,H/S)
 
         # ------------------------------------------------------------
+        # Middle subplot: cell Peclet number heatmap
+        # ------------------------------------------------------------
+
+        # Directional face Peclet numbers F/D for the pressure cells.
+        pecletEast=rho*np.abs(u[1:,:])*dx/mu
+        pecletWest=rho*np.abs(u[:-1,:])*dx/mu
+        pecletNorth=rho*np.abs(v[:,1:])*dy/mu
+        pecletSouth=rho*np.abs(v[:,:-1])*dy/mu
+        cellPecletNumber=np.maximum.reduce((pecletEast,pecletWest,pecletNorth,pecletSouth))
+
+        pecletAxis=axes[1]
+        pecletPlot=pecletAxis.pcolormesh(
+            np.arange(Nx+1)*dx/S,
+            np.arange(Ny+1)*dy/S,
+            cellPecletNumber.T,
+            cmap='inferno',
+            shading='flat'
+        )
+        pecletAxis.set_xlabel(r'$x/S$')
+        pecletAxis.set_ylabel(r'$y/S$')
+        pecletAxis.set_title('Backward-Facing Step\nMaximum Cell Péclet Number (F/D)')
+        pecletAxis.set_xlim(0,L/S)
+        pecletAxis.set_ylim(0,H/S)
+        pecletColorbar=figure.colorbar(pecletPlot,ax=pecletAxis,fraction=0.046,pad=0.12)
+        pecletColorbar.set_label(r'Maximum directional cell $Pe = |F|/D$')
+
+        print(f'Cell Peclet numbers: max {np.max(cellPecletNumber):.3f}, '
+              f'cells above 2: {np.count_nonzero(cellPecletNumber>2)}/{cellPecletNumber.size}')
+
+        # ------------------------------------------------------------
         # 6. Add colour bars
         # ------------------------------------------------------------
         vectorColorbar=figure.colorbar(
@@ -875,9 +906,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         figure.subplots_adjust(
             left=0.08,
             right=0.88,
-            top=0.95,
-            bottom=0.08,
-            hspace=0.20
+            top=0.96,
+            bottom=0.06,
+            hspace=0.48
         )
 
     elif(caseName != 'bfs'):

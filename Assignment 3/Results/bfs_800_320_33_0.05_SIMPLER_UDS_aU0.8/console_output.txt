@@ -35,3 +35,15 @@ t =  30.000 s | SIMPLER iterations   7 | max|u^(n+1)-u^n|/U0 = 1.80e-03
 t =  40.000 s | SIMPLER iterations   7 | max|u^(n+1)-u^n|/U0 = 1.36e-03
 t =  50.000 s | SIMPLER iterations   7 | max|u^(n+1)-u^n|/U0 = 1.19e-03
 t =  60.000 s | SIMPLER iterations   6 | max|u^(n+1)-u^n|/U0 = 1.04e-03
+t =  70.000 s | SIMPLER iterations   6 | max|u^(n+1)-u^n|/U0 = 8.60e-04
+t =  80.000 s | SIMPLER iterations   6 | max|u^(n+1)-u^n|/U0 = 7.67e-04
+t =  90.000 s | SIMPLER iterations   6 | max|u^(n+1)-u^n|/U0 = 6.61e-04
+t = 100.000 s | SIMPLER iterations   6 | max|u^(n+1)-u^n|/U0 = 6.21e-04
+SIMPLER total CPU time: 1754.176 s
+SIMPLER iterations per time step: min 6, average 6.79, max 26
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.05_SIMPLER_UDS_aU0.8/iteration_history.csv
+Bottom wall zero crossings (x/S): [np.float64(8.295619924489127)]
+Top wall zero crossings (x/S): [np.float64(6.454100701202941), np.float64(13.864138645337869)]
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.05_SIMPLER_UDS_aU0.8/01_Backward_Facing_Step.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.05_SIMPLER_UDS_aU0.8/02_SIMPLER_iterations.png
