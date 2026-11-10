@@ -303,7 +303,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: 0
         northBC='wall'; uNorth=lambda t: 0
         dpdx=0
-        dt= 0.01; tEnd=100
+        dt= 0.01 ; tEnd=100
         tOut=np.array([1,5,10,20,50,100],dtype=float)
         stopWhenSteady=True
         caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
@@ -688,6 +688,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             normalisedUVelocity[:,0],pressureGridXCoordinates
         )
 
+        if len(bottomWallCrossings)==2:
+            bottomWallCrossings=bottomWallCrossings[1:]
+
         topWallCrossings=findVelocitySignChanges(
             normalisedUVelocity[:,-1],pressureGridXCoordinates
         )
@@ -757,7 +760,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # ============================================================
 
         figure,axes=plt.subplots(2,1,num='Backward Facing Step',figsize=(16,10))
-
+        
         # ------------------------------------------------------------
         # Left subplot: downstream velocity profiles
         # ------------------------------------------------------------
@@ -785,32 +788,35 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
         flowFieldAxis=axes[0]
 
-        # Streamlines coloured using black
+        # Streamlines coloured using solid color
         streamlinePlot=flowFieldAxis.streamplot(
             pressureGridXCoordinates,
             pressureGridYCoordinates,
             streamplotUVelocity,
             streamplotVVelocity,
-            color=streamplotVelocityMagnitude,
-            cmap='black',
-            density=2.0,
-            linewidth=1.2,
+            color='lightgrey',
+            density= 2.50,
+            linewidth= 1.5,
             arrowsize=1.0
         )
 
-        # Velocity vectors coloured using winter
+        # Velocity vectors coloured using inferno
         quiverPlot=flowFieldAxis.quiver(
             quiverXCoordinates,
             quiverYCoordinates,
             quiverUVelocity,
             quiverVVelocity,
             quiverVelocityMagnitude,
-            cmap='winter',
+            headwidth=3,
+            headlength=4,
+            headaxislength=3,
+            cmap='inferno',
             angles='xy',
             scale_units='xy',
-            scale=None,
             alpha=0.95
         )
+        figure.canvas.draw()
+        quiverPlot.scale*=2
 
 
         # ------------------------------------------------------------
@@ -844,8 +850,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
                 label=f'Top wall (2): x/S = {topWallCrossings[1]:.2f}'
             )
 
-        flowFieldAxis.legend(loc='upper right',fontsize=9)
-
+        flowFieldAxis.legend(loc='upper right',fontsize=12)
 
         # Step face
         flowFieldAxis.plot([0,0],[0,1],'k-',linewidth=4)
@@ -859,15 +864,6 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # ------------------------------------------------------------
         # 6. Add colour bars
         # ------------------------------------------------------------
-
-        streamlineColorbar=figure.colorbar(
-            streamlinePlot.lines,
-            ax=flowFieldAxis,
-            fraction=0.046,
-            pad=0.04
-        )
-        streamlineColorbar.set_label(r'Streamline colour: $|\mathbf{V}|/U_0$')
-
         vectorColorbar=figure.colorbar(
             quiverPlot,
             ax=flowFieldAxis,
@@ -881,7 +877,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
             right=0.88,
             top=0.95,
             bottom=0.08,
-            hspace=0.40
+            hspace=0.20
         )
 
     elif(caseName != 'bfs'):

@@ -39,7 +39,7 @@ t =   2.800 s | SIMPLEC iterations  70 | max|u^(n+1)-u^n|/U0 = 2.91e-02
 t =   3.200 s | SIMPLEC iterations  68 | max|u^(n+1)-u^n|/U0 = 2.79e-02
 t =   3.600 s | SIMPLEC iterations  60 | max|u^(n+1)-u^n|/U0 = 1.61e-02
 t =   4.000 s | SIMPLEC iterations  67 | max|u^(n+1)-u^n|/U0 = 1.02e-02
-SIMPLEC total CPU time: 100.179 s
+SIMPLEC total CPU time: 82.495 s
 SIMPLEC iterations per time step: min 59, average 67.34, max 79
 Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLEC_UDS_aU0.5/iteration_history.csv
 

@@ -39,7 +39,7 @@ t =   2.800 s | SIMPLER iterations  24 | max|u^(n+1)-u^n|/U0 = 2.91e-02
 t =   3.200 s | SIMPLER iterations  23 | max|u^(n+1)-u^n|/U0 = 2.79e-02
 t =   3.600 s | SIMPLER iterations  21 | max|u^(n+1)-u^n|/U0 = 1.61e-02
 t =   4.000 s | SIMPLER iterations  23 | max|u^(n+1)-u^n|/U0 = 1.02e-02
-SIMPLER total CPU time: 69.233 s
+SIMPLER total CPU time: 57.787 s
 SIMPLER iterations per time step: min 21, average 23.36, max 27
 Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLER_UDS_aU0.8/iteration_history.csv
 

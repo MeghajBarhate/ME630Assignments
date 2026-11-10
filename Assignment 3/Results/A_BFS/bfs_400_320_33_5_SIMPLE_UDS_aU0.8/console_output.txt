@@ -1,0 +1,49 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_400_320_33_5_SIMPLE_UDS_aU0.8
+Algorithm: SIMPLE | Scheme: UDS | Re: 400 | alphaU: 0.8 | alphaP: 0.3
+Case "bfs": 320 x 33 cells, dt = 5 s, 20 steps
+Courant number U0*dt/dx = 40.00, diffusion number nu*dt/dy^2 = 6.80
+(implicit scheme: no stability limit, but accuracy needs small dt)
+t =  10.000 s | SIMPLE iterations  99 | max|u^(n+1)-u^n|/U0 = 3.21e-01
+t =  20.000 s | SIMPLE iterations  98 | max|u^(n+1)-u^n|/U0 = 1.33e-01
+t =  30.000 s | SIMPLE iterations  91 | max|u^(n+1)-u^n|/U0 = 8.19e-02
+t =  40.000 s | SIMPLE iterations  86 | max|u^(n+1)-u^n|/U0 = 5.68e-02
+t =  50.000 s | SIMPLE iterations  82 | max|u^(n+1)-u^n|/U0 = 3.89e-02
+t =  60.000 s | SIMPLE iterations  78 | max|u^(n+1)-u^n|/U0 = 2.70e-02
+t =  70.000 s | SIMPLE iterations  75 | max|u^(n+1)-u^n|/U0 = 1.90e-02
+t =  80.000 s | SIMPLE iterations  72 | max|u^(n+1)-u^n|/U0 = 1.34e-02
+t =  90.000 s | SIMPLE iterations  68 | max|u^(n+1)-u^n|/U0 = 9.49e-03
+t = 100.000 s | SIMPLE iterations  65 | max|u^(n+1)-u^n|/U0 = 6.69e-03
+SIMPLE total CPU time: 82.759 s
+SIMPLE iterations per time step: min 65, average 82.15, max 101
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_400_320_33_5_SIMPLE_UDS_aU0.8/iteration_history.csv
+Bottom wall zero crossings (x/S): [np.float64(7.360937420312821)]
+Top wall zero crossings (x/S): []
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_400_320_33_5_SIMPLE_UDS_aU0.8/01_Backward_Facing_Step.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_400_320_33_5_SIMPLE_UDS_aU0.8/02_SIMPLE_iterations.png

@@ -1,0 +1,53 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_15_SIMPLE_UDS_aU0.8
+Algorithm: SIMPLE | Scheme: UDS | Re: 800 | alphaU: 0.8 | alphaP: 0.3
+Case "bfs": 320 x 33 cells, dt = 15 s, 7 steps
+Courant number U0*dt/dx = 120.00, diffusion number nu*dt/dy^2 = 10.20
+(implicit scheme: no stability limit, but accuracy needs small dt)
+Warning: step 1: SIMPLE not converged (mass 6.0e-08, change 1.3e-06)
+t =  15.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 1.50e+00
+Warning: step 2: SIMPLE not converged (mass 6.2e-06, change 8.7e-06)
+t =  30.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 3.60e-01
+Warning: step 3: SIMPLE not converged (mass 2.3e-06, change 1.9e-06)
+t =  45.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 2.23e-01
+Warning: step 4: SIMPLE not converged (mass 2.0e-06, change 8.6e-07)
+t =  60.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 1.86e-01
+Warning: step 5: SIMPLE not converged (mass 8.5e-06, change 3.3e-06)
+t =  75.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 1.56e-01
+Warning: step 6: SIMPLE not converged (mass 2.1e-05, change 9.3e-06)
+t =  90.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 1.27e-01
+Warning: step 7: SIMPLE not converged (mass 2.0e-05, change 8.9e-06)
+t = 105.000 s | SIMPLE iterations 200 | max|u^(n+1)-u^n|/U0 = 1.06e-01
+SIMPLE total CPU time: 72.799 s
+SIMPLE iterations per time step: min 200, average 200.00, max 200
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_15_SIMPLE_UDS_aU0.8/iteration_history.csv
+Bottom wall zero crossings (x/S): [np.float64(8.758944465561607)]
+Top wall zero crossings (x/S): [np.float64(6.886433431906693), np.float64(13.942149707310504)]
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_15_SIMPLE_UDS_aU0.8/01_Backward_Facing_Step.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_15_SIMPLE_UDS_aU0.8/02_SIMPLE_iterations.png
