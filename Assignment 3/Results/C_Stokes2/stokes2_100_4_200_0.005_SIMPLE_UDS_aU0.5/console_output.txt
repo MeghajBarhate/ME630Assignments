@@ -1,0 +1,70 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLE_UDS_aU0.5
+Algorithm: SIMPLE | Scheme: UDS | Re: 100 | alphaU: 0.5 | alphaP: 0.3
+Case "stokes2": 4 x 200 cells, dt = 0.005 s, 800 steps
+Courant number U0*dt/dx = 1.00, diffusion number nu*dt/dy^2 = 2.00
+(implicit scheme: no stability limit, but accuracy needs small dt)
+t =   0.400 s | SIMPLE iterations  70 | max|u^(n+1)-u^n|/U0 = 1.92e-02
+t =   0.800 s | SIMPLE iterations  70 | max|u^(n+1)-u^n|/U0 = 2.91e-02
+t =   1.200 s | SIMPLE iterations  68 | max|u^(n+1)-u^n|/U0 = 2.79e-02
+t =   1.600 s | SIMPLE iterations  60 | max|u^(n+1)-u^n|/U0 = 1.61e-02
+t =   2.000 s | SIMPLE iterations  67 | max|u^(n+1)-u^n|/U0 = 1.02e-02
+t =   2.400 s | SIMPLE iterations  70 | max|u^(n+1)-u^n|/U0 = 1.93e-02
+t =   2.800 s | SIMPLE iterations  70 | max|u^(n+1)-u^n|/U0 = 2.91e-02
+t =   3.200 s | SIMPLE iterations  68 | max|u^(n+1)-u^n|/U0 = 2.79e-02
+t =   3.600 s | SIMPLE iterations  60 | max|u^(n+1)-u^n|/U0 = 1.61e-02
+t =   4.000 s | SIMPLE iterations  67 | max|u^(n+1)-u^n|/U0 = 1.02e-02
+SIMPLE total CPU time: 101.172 s
+SIMPLE iterations per time step: min 59, average 67.34, max 79
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLE_UDS_aU0.5/iteration_history.csv
+
+   t [s]   max|u - u_exact| / U0
+    3.000   2.00e-03
+    3.125   3.51e-03
+    3.250   4.35e-03
+    3.375   4.15e-03
+    3.500   3.32e-03
+    3.625   3.03e-03
+    3.750   3.71e-03
+    3.875   3.34e-03
+
+--- Stokes II: Convergence results ---
+Steps per period   : 200
+Ny                 : 200
+Cells per delta    : 11.2838
+Amplitude          : 0.36457138
+Exact amplitude    : 0.36787944
+Amplitude error [%]: 0.8992
+Phase lag [rad]    : 0.99222424
+Exact lag [rad]    : 1.00000000
+Phase error [rad]  : 7.77575786e-03
+Amplitude accuracy : PASS (within 1%)
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLE_UDS_aU0.5/01_Velocity_profiles.png
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLE_UDS_aU0.5/02_Stokes_2_Wall_Shear_Stress.png
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/stokes2_100_4_200_0.005_SIMPLE_UDS_aU0.5/03_SIMPLE_iterations.png

@@ -1,0 +1,56 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/channel_100_100_40_0.25_SIMPLE_UDS_aU0.8
+Algorithm: SIMPLE | Scheme: UDS | Re: 100 | alphaU: 0.8 | alphaP: 0.3
+Case "channel": 100 x 40 cells, dt = 0.25 s, 240 steps
+Courant number U0*dt/dx = 2.50, diffusion number nu*dt/dy^2 = 4.00
+(implicit scheme: no stability limit, but accuracy needs small dt)
+t =   6.000 s | SIMPLE iterations  20 | max|u^(n+1)-u^n|/U0 = 1.37e-03
+t =  12.000 s | SIMPLE iterations   4 | max|u^(n+1)-u^n|/U0 = 6.18e-06
+t =  18.000 s | SIMPLE iterations   1 | max|u^(n+1)-u^n|/U0 = 1.68e-07
+Steady state reached at t = 19.25 s (step 77)
+SIMPLE total CPU time: 13.381 s
+SIMPLE iterations per time step: min 1, average 12.52, max 42
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/channel_100_100_40_0.25_SIMPLE_UDS_aU0.8/iteration_history.csv
+
+   t [s]   max|u - u_exact| / U0
+    1.000   2.40e-01
+    2.000   1.24e-01
+    5.000   1.51e-02
+   10.000   1.56e-03
+   19.250   1.38e-03
+(channel: compared with the fully developed Poiseuille profile at the outlet)
+
+Hydrodynamic Entrance Lengths
+Analytical : 5.000000 m
+Numerical  : 5.000000 m
+Difference : 0.000000 m
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/channel_100_100_40_0.25_SIMPLE_UDS_aU0.8/01_Velocity_profiles.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/channel_100_100_40_0.25_SIMPLE_UDS_aU0.8/02_Channel_flow_field.png
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/channel_100_100_40_0.25_SIMPLE_UDS_aU0.8/03_SIMPLE_iterations.png

@@ -230,7 +230,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         ANSWER A1.4
         =====
         '''
-        dt= 0.02; tEnd=60            # Time step and end time [s]
+        dt= 1.0; tEnd=60            # Time step and end time [s]
         tOut=np.array([1,2,5,10,20,60],dtype=float)
         entryLengthAnalytical=0.05*(rho*U0*H/mu)*H
         entryLengthNumerical = None
@@ -266,7 +266,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: U0  # Plate impulsively started
         northBC='slip'; uNorth=lambda t: 0   # Far field: zero shear
         dpdx=0
-        dt=0.0005; tEnd=1
+        dt=0.001; tEnd=1
         tOut=np.array([0.05,0.1,0.25,0.5,1],dtype=float)
         stopWhenSteady=False
         Re=rho*U0*H/mu
@@ -283,7 +283,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: U0*np.cos(omega*t)
         northBC='slip'; uNorth=lambda t: 0
         dpdx=0
-        dt=T/400; tEnd=4*T          # Four periods; start-up transient decays fast
+        dt=T/200; tEnd=4*T          # Four periods; start-up transient decays fast
         tOut=tEnd-T+np.arange(8)*T/8  # Eight phases of the last period
         stopWhenSteady=False
         Re=rho*U0*H/mu
@@ -295,7 +295,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         L=40*S
         Ny=33; Nx=320
         rho=1; U0=1
-        Re=500
+        Re=800
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -303,7 +303,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: 0
         northBC='wall'; uNorth=lambda t: 0
         dpdx=0
-        dt=0.05; tEnd=100
+        dt= 0.01; tEnd=100
         tOut=np.array([1,5,10,20,50,100],dtype=float)
         stopWhenSteady=True
         caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
@@ -756,13 +756,13 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # 5. Plot results
         # ============================================================
 
-        figure,axes=plt.subplots(1,2,num='Backward Facing Step',figsize=(17,7))
+        figure,axes=plt.subplots(2,1,num='Backward Facing Step',figsize=(16,10))
 
         # ------------------------------------------------------------
         # Left subplot: downstream velocity profiles
         # ------------------------------------------------------------
 
-        profileAxis=axes[0]
+        profileAxis=axes[1]
 
         for station,velocityProfile in downstreamProfileData:
             profileAxis.plot(
@@ -783,7 +783,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         # Right subplot: velocity vectors and streamlines
         # ------------------------------------------------------------
 
-        flowFieldAxis=axes[1]
+        flowFieldAxis=axes[0]
 
         # Streamlines coloured using plasma
         streamlinePlot=flowFieldAxis.streamplot(
@@ -853,7 +853,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         flowFieldAxis.set_xlabel(r'$x/S$')
         flowFieldAxis.set_ylabel(r'$y/S$')
         flowFieldAxis.set_title('Backward-Facing Step\nVelocity Vectors and Streamlines')
-        flowFieldAxis.set_xlim(0,15)
+        flowFieldAxis.set_xlim(0,40)
         flowFieldAxis.set_ylim(0,H/S)
 
         # ------------------------------------------------------------
@@ -877,11 +877,11 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         vectorColorbar.set_label(r'Vector colour: $|\mathbf{V}|/U_0$')
 
         figure.subplots_adjust(
-            left=0.07,
-            right=0.95,
-            top=0.88,
-            bottom=0.12,
-            wspace=0.42
+            left=0.08,
+            right=0.88,
+            top=0.95,
+            bottom=0.08,
+            hspace=0.40
         )
 
     elif(caseName != 'bfs'):
