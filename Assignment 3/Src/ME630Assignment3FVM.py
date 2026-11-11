@@ -292,13 +292,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     elif caseName=='bfs':
         # Backward-facing step (Geometry from Armaly)
         S=1; 
-        #h=17/16; 
-        h=1;
+        #h=16/17;
+        h=32/34;
         H=S+h
         L=40*S
-        Ny=33; Nx=round(L*Ny/(2*H))
+        #Ny=33; Nx=round(L*Ny/(2*H))
+        Ny=66; Nx=round(L*Ny/(2*H))
         rho=1; U0=1
-        Re=800
+        Re=400
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -315,9 +316,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         raise ValueError(f'Unknown caseName "{caseName}"')
 
     # ---------------------- SIMPLE controls ---------------------------------
-    alphaU=1.0                     # Momentum under-relaxation (within a time step)
+    alphaU=0.8                     # Momentum under-relaxation (within a time step)
     alphaP=0.3                     # Pressure under-relaxation
-    maxInner=200                   # Max SIMPLE iterations per time step
+    maxInner=400                   # Max SIMPLE iterations per time step
     tolInner=1e-6                  # Convergence of each time step
     tolSteady=1e-7                 # |u^(n+1)-u^n|/U0 below this -> steady
 

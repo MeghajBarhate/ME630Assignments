@@ -1,0 +1,31 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_400_680_66_0.05_PecPlot_SIMPLE_CDS-DC_aU0.8
+Algorithm: SIMPLE | Scheme: CDS-DC | Re: 400 | alphaU: 0.8 | alphaP: 0.3
+Case "bfs": 680 x 66 cells, dt = 0.05 s, 2000 steps
+Courant number U0*dt/dx = 0.85, diffusion number nu*dt/dy^2 = 0.27
+(implicit scheme: no stability limit, but accuracy needs small dt)
