@@ -291,11 +291,14 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
 
     elif caseName=='bfs':
         # Backward-facing step (Geometry from Armaly)
-        S=1; h=17/16; H=S+h
+        S=1; 
+        #h=17/16; 
+        h=1;
+        H=S+h
         L=40*S
-        Ny=33; Nx=320
+        Ny=100; Nx=round(L*Ny/(2*H))
         rho=1; U0=1
-        Re=400
+        Re=100
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -303,10 +306,10 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: 0
         northBC='wall'; uNorth=lambda t: 0
         dpdx=0
-        dt= 0.01 ; tEnd=100
+        dt= 0.5 ; tEnd=100
         tOut=np.array([1,5,10,20,50,100],dtype=float)
         stopWhenSteady=True
-        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}'
+        caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}_PecPlot'
 
     else:
         raise ValueError(f'Unknown caseName "{caseName}"')
