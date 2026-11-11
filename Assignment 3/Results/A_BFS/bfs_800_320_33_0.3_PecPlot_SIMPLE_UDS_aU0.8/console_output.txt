@@ -1,0 +1,50 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.3_PecPlot_SIMPLE_UDS_aU0.8
+Algorithm: SIMPLE | Scheme: UDS | Re: 800 | alphaU: 0.8 | alphaP: 0.3
+Case "bfs": 320 x 33 cells, dt = 0.3 s, 333 steps
+Courant number U0*dt/dx = 2.40, diffusion number nu*dt/dy^2 = 0.20
+(implicit scheme: no stability limit, but accuracy needs small dt)
+t =   9.900 s | SIMPLE iterations  18 | mass 9.61e-15 | steady rate 2.33e-01
+t =  19.800 s | SIMPLE iterations  18 | mass 9.60e-15 | steady rate 1.18e-01
+t =  29.700 s | SIMPLE iterations  17 | mass 8.98e-15 | steady rate 7.33e-02
+t =  39.600 s | SIMPLE iterations  16 | mass 9.08e-15 | steady rate 5.83e-02
+t =  49.500 s | SIMPLE iterations  15 | mass 8.88e-15 | steady rate 4.91e-02
+t =  59.400 s | SIMPLE iterations  15 | mass 8.91e-15 | steady rate 4.26e-02
+t =  69.300 s | SIMPLE iterations  15 | mass 8.87e-15 | steady rate 3.77e-02
+t =  79.200 s | SIMPLE iterations  14 | mass 8.79e-15 | steady rate 3.07e-02
+t =  89.100 s | SIMPLE iterations  14 | mass 8.95e-15 | steady rate 2.72e-02
+t =  99.000 s | SIMPLE iterations  14 | mass 8.77e-15 | steady rate 2.56e-02
+SIMPLE total CPU time: 253.916 s
+SIMPLE iterations per time step: min 13, average 15.96, max 78
+Saved iteration history: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.3_PecPlot_SIMPLE_UDS_aU0.8/iteration_history.csv
+Bottom wall zero crossings (x/S): [np.float64(8.301135213678068)]
+Top wall zero crossings (x/S): [np.float64(6.459537803549978), np.float64(13.862104526575104)]
+Cell Peclet numbers: max 70.588, cells above 2: 9983/10560
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.3_PecPlot_SIMPLE_UDS_aU0.8/01_Backward_Facing_Step.png
+findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+Saved figure: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_800_320_33_0.3_PecPlot_SIMPLE_UDS_aU0.8/02_SIMPLE_iterations.png

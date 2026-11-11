@@ -296,9 +296,9 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         h=1;
         H=S+h
         L=40*S
-        Ny=100; Nx=round(L*Ny/(2*H))
+        Ny=33; Nx=round(L*Ny/(2*H))
         rho=1; U0=1
-        Re=100
+        Re=800
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -306,7 +306,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         southBC='wall'; uSouth=lambda t: 0
         northBC='wall'; uNorth=lambda t: 0
         dpdx=0
-        dt= 0.5 ; tEnd=100
+        dt= 0.01 ; tEnd=100
         tOut=np.array([1,5,10,20,50,100],dtype=float)
         stopWhenSteady=True
         caseFolderName=f'{caseName}_{Re:g}_{Nx}_{Ny}_{dt:g}_PecPlot'
@@ -315,7 +315,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         raise ValueError(f'Unknown caseName "{caseName}"')
 
     # ---------------------- SIMPLE controls ---------------------------------
-    alphaU=0.8                     # Momentum under-relaxation (within a time step)
+    alphaU=1.0                     # Momentum under-relaxation (within a time step)
     alphaP=0.3                     # Pressure under-relaxation
     maxInner=200                   # Max SIMPLE iterations per time step
     tolInner=1e-6                  # Convergence of each time step

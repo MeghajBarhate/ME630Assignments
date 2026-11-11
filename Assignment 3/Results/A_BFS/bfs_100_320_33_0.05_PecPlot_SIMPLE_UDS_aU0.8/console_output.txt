@@ -1,0 +1,38 @@
+========================================================================================== 
+
+ME630 Assignment 3 | Meghaj Nandkumar Barhate | 261050047
+
+==========================================================================================
+
+Available cases:
+1.  channel  - Developing flow between two fixed plates, started from rest
+2.  couette  - Start-up of Couette flow: upper plate starts moving
+3.  stokes1  - Stokes first problem: plate impulsively started
+4.  stokes2  - Stokes second problem: plate oscillating in its own plane
+5.  bfs      - Backward-facing step flow (Armaly geometry)
+Enter the case number : 
+==========================================================================================
+Available algorithms:
+1.  SIMPLE   - Standard SIMPLE algorithm
+2.  SIMPLEC  - SIMPLEC algorithm
+3.  SIMPLER  - SIMPLER algorithm
+Enter the algorithm (SIMPLE, SIMPLEC, SIMPLER) : 
+==========================================================================================
+Available convection schemes:
+1.  Upwind   - First-order upwind scheme
+2.  Central  - Second-order central differencing scheme
+3.  Central Difference - Deferred correction scheme
+Enter the convection scheme (UDS, CDS, CDS-DC) : 
+==========================================================================================
+Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Results/bfs_100_320_33_0.05_PecPlot_SIMPLE_UDS_aU0.8
+Algorithm: SIMPLE | Scheme: UDS | Re: 100 | alphaU: 0.8 | alphaP: 0.3
+Case "bfs": 320 x 33 cells, dt = 0.05 s, 2000 steps
+Courant number U0*dt/dx = 0.40, diffusion number nu*dt/dy^2 = 0.27
+(implicit scheme: no stability limit, but accuracy needs small dt)
+Traceback (most recent call last):
+  File "/home/meghaj/Programming/ME630Assignments/Assignment 3/Src/ME630Assignment3FVM.py", line 1275, in <module>
+    main(case, algorithm, convectionScheme)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/meghaj/Programming/ME630Assignments/Assignment 3/Src/ME630Assignment3FVM.py", line 606, in main
+    raise RuntimeError(f'Incompatible pressure correction at step {n}, iteration {it}')
+RuntimeError: Incompatible pressure correction at step 1, iteration 1
