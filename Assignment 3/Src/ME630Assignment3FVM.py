@@ -299,7 +299,7 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
         #Ny=33; Nx=round(L*Ny/(2*H))
         Ny=66; Nx=round(L*Ny/(2*H))
         rho=1; U0=1
-        Re=400
+        Re=700
         mu=rho*U0*(2*h)/Re
         xBC='inlet-outlet'
         # Parabolic inlet profile above the step
@@ -652,10 +652,10 @@ def main(case, algorithm='SIMPLE', convectionScheme = 'UDS'):
     print(f'{algorithm} iterations per time step: min {np.min(nInner)}, average {averageIterations:.2f}, max {np.max(nInner)}')
 
     # Save iteration history for plotting in LabPlot or other software.
-    iterationData=np.column_stack((np.arange(1,len(nInner)+1),np.arange(1,len(nInner)+1)*dt,nInner))
-    iterationFile=os.path.join(outputFolder,'iteration_history.csv')
-    np.savetxt(iterationFile,iterationData,delimiter=',',header='TimeStep,Time_s,Iterations',comments='',fmt=['%d','%.12g','%d'])
-    print(f'Saved iteration history: {iterationFile}')
+  #  iterationData=np.column_stack((np.arange(1,len(nInner)+1),np.arange(1,len(nInner)+1)*dt,nInner))
+ #   iterationFile=os.path.join(outputFolder,'iteration_history.csv')
+    #np.savetxt(iterationFile,iterationData,delimiter=',',header='TimeStep,Time_s,Iterations',comments='',fmt=['%d','%.12g','%d'])
+#    print(f'Saved iteration history: {iterationFile}')
 
     # ====================== 6. Comparison with exact solutions ==============
     # Wall speeds for the exact solutions: the plates are taken to move at
