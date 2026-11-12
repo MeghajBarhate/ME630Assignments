@@ -1,5 +1,0 @@
-Output folder: /home/meghaj/Programming/ME630Assignments/Assignment 3/Src/Results/bfs_400_680_66_0.005_PecPlot_SIMPLE_CDS_aU0.8
-Algorithm: SIMPLE | Scheme: CDS | Re: 400 | alphaU: 0.8 | alphaP: 0.3
-Case "bfs": 680 x 66 cells, dt = 0.005 s, 20000 steps
-Courant number U0*dt/dx = 0.09, diffusion number nu*dt/dy^2 = 0.03
-(implicit scheme: no stability limit, but accuracy needs small dt)
